@@ -2124,8 +2124,9 @@ button.detail-check:hover {
         <button class="secondary-button cloud-button" id="cloudButton" type="button" data-status="local">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18h9.5a4 4 0 0 0 .4-8A6 6 0 0 0 6 9.5 4.5 4.5 0 0 0 7 18Zm5-9v6m0-6-2 2m2-2 2 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span class="cloud-status-dot" id="cloudStatusDot" aria-hidden="true"></span>
-          <span id="cloudButtonLabel">云同步</span>
-        </button>        <button class="secondary-button" id="shareButton" type="button">
+          <span id="cloudButtonLabel">登录</span>
+        </button>
+        <button class="secondary-button" id="shareButton" type="button">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0 4 4m-4-4L8 7M5 12v7h14v-7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
           分享
         </button>
@@ -2217,35 +2218,14 @@ button.detail-check:hover {
     <div class="cloud-content">
       <header class="dialog-header">
         <div>
-          <p class="section-kicker">CLOUD SYNC</p>
-          <h2 id="cloudTitle">云同步</h2>
+          <p class="section-kicker">ACCOUNT</p>
+          <h2 id="cloudTitle">登录</h2>
         </div>
         <button class="icon-button" id="closeCloudButton" type="button" aria-label="关闭">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
-      </header>
-
-      <section class="cloud-view" id="cloudSetupView">
-        <p class="cloud-description">连接你的 Supabase 项目后，可以在不同设备登录同一账户并自动同步打卡数据。</p>
-        <div class="form-field">
-          <label for="cloudUrl">Supabase 项目地址</label>
-          <input id="cloudUrl" type="url" autocomplete="off" placeholder="https://xxxx.supabase.co" />
-        </div>
-        <div class="form-field">
-          <label for="cloudAnonKey">Publishable key / anon key</label>
-          <input id="cloudAnonKey" type="password" autocomplete="off" placeholder="填写公开密钥" />
-        </div>
-        <p class="cloud-note">只填写公开密钥，不要填写 service_role 私密密钥。该密钥可以安全地放在前端。</p>
-        <p class="cloud-error" id="cloudSetupError" role="alert"></p>
-        <button class="primary-button cloud-full-button" id="saveCloudConfigButton" type="button">保存连接设置</button>
-        <details class="cloud-help">
-          <summary>如何获取这些配置？</summary>
-          <p>先在 Supabase 创建项目，在 Project Settings → API 中找到 Project URL 和 anon/publishable key。数据库表结构请参考项目中的 supabase-setup.sql。</p>
-        </details>
-      </section>
-
-      <section class="cloud-view" id="cloudAuthView" hidden>
-        <p class="cloud-description">使用邮箱和密码登录。第一次使用请先注册，电脑和手机登录同一个账户即可同步。</p>
+      </header><section class="cloud-view" id="cloudAuthView" hidden>
+        <p class="cloud-description">登录后可以在不同设备间自动同步打卡数据。第一次使用请先注册。</p>
         <form class="cloud-auth-form" id="cloudAuthForm">
           <div class="form-field">
             <label for="cloudEmail">邮箱</label>
@@ -2261,7 +2241,6 @@ button.detail-check:hover {
             <button class="secondary-button" id="cloudRegisterButton" type="button">注册新账户</button>
           </div>
         </form>
-        <button class="cloud-link-button" id="editCloudConfigButton" type="button">修改连接设置</button>
       </section>
 
       <section class="cloud-view" id="cloudAccountView" hidden>
@@ -2281,7 +2260,6 @@ button.detail-check:hover {
           <button class="secondary-button" id="cloudUploadLocalButton" type="button">上传本机数据</button>
         </div>
         <div class="cloud-account-footer">
-          <button class="cloud-link-button" id="changeCloudConfigButton" type="button">更换云项目</button>
           <button class="cloud-link-button cloud-signout" id="cloudSignOutButton" type="button">退出登录</button>
         </div>
       </section>
@@ -2361,8 +2339,8 @@ const MOTIVATION_KEY = "weiguang-habit-motivation-last";
 const CLOUD_CONFIG_KEY = "weiguang-cloud-config-v1";
 const CLOUD_SESSION_KEY = "weiguang-cloud-session-v1";
 const EMBEDDED_CLOUD_CONFIG = {
-  supabaseUrl: "",
-  supabaseAnonKey: ""
+  supabaseUrl: "https://mlqetqrlxcyoulertpbv.supabase.co",
+  supabaseAnonKey: "sb_publishable_cNymxaaKm6BodcOmXCbCQg_wIzKRpWL"
 };
 const EMOJIS = ["🏃", "📚", "🧘", "💧", "🌙", "🥗", "💪", "✍️", "🧠", "🚶", "💻", "🌱", "☀️", "🎯", "🎸", "🫶"];
 const COLORS = [
@@ -2396,11 +2374,6 @@ const elements = {
   cloudStatusDot: document.getElementById("cloudStatusDot"),
   cloudDialog: document.getElementById("cloudDialog"),
   closeCloudButton: document.getElementById("closeCloudButton"),
-  cloudSetupView: document.getElementById("cloudSetupView"),
-  cloudUrl: document.getElementById("cloudUrl"),
-  cloudAnonKey: document.getElementById("cloudAnonKey"),
-  cloudSetupError: document.getElementById("cloudSetupError"),
-  saveCloudConfigButton: document.getElementById("saveCloudConfigButton"),
   cloudAuthView: document.getElementById("cloudAuthView"),
   cloudAuthForm: document.getElementById("cloudAuthForm"),
   cloudEmail: document.getElementById("cloudEmail"),
@@ -2408,7 +2381,6 @@ const elements = {
   cloudAuthError: document.getElementById("cloudAuthError"),
   cloudLoginButton: document.getElementById("cloudLoginButton"),
   cloudRegisterButton: document.getElementById("cloudRegisterButton"),
-  editCloudConfigButton: document.getElementById("editCloudConfigButton"),
   cloudAccountView: document.getElementById("cloudAccountView"),
   cloudUserEmail: document.getElementById("cloudUserEmail"),
   cloudStatusDotLarge: document.getElementById("cloudStatusDotLarge"),
@@ -2416,7 +2388,6 @@ const elements = {
   cloudLastSync: document.getElementById("cloudLastSync"),
   cloudSyncNowButton: document.getElementById("cloudSyncNowButton"),
   cloudUploadLocalButton: document.getElementById("cloudUploadLocalButton"),
-  changeCloudConfigButton: document.getElementById("changeCloudConfigButton"),
   cloudSignOutButton: document.getElementById("cloudSignOutButton"),  shareButton: document.getElementById("shareButton"),
   calendarTitle: document.getElementById("calendarTitle"),
   calendarGrid: document.getElementById("calendarGrid"),
@@ -3653,14 +3624,14 @@ function formatCloudTime(value) {
 function setCloudStatus(status, message = "") {
   cloudStatus = status;
   const labels = {
-    local: "云同步",
-    configured: "登录同步",
+    local: "登录",
+    configured: "登录",
     syncing: "同步中",
-    synced: "已同步",
+    synced: "已登录",
     error: "同步异常"
   };
   const descriptions = {
-    local: "尚未连接云同步",
+    local: "登录后自动同步",
     configured: "已配置，等待登录",
     syncing: "正在与云端同步",
     synced: "数据已同步",
@@ -3669,8 +3640,8 @@ function setCloudStatus(status, message = "") {
 
   if (elements.cloudButton) {
     elements.cloudButton.dataset.status = status;
-    elements.cloudButtonLabel.textContent = labels[status] || "云同步";
-    elements.cloudButton.title = message || descriptions[status] || "云同步";
+    elements.cloudButtonLabel.textContent = labels[status] || "登录";
+    elements.cloudButton.title = message || descriptions[status] || "登录";
   }
   if (elements.cloudStatusDotLarge) elements.cloudStatusDotLarge.dataset.status = status;
   if (elements.cloudStatusText) elements.cloudStatusText.textContent = message || descriptions[status] || "等待同步";
@@ -3679,7 +3650,6 @@ function setCloudStatus(status, message = "") {
 
 function showCloudView(view) {
   const views = {
-    setup: elements.cloudSetupView,
     auth: elements.cloudAuthView,
     account: elements.cloudAccountView
   };
@@ -3690,15 +3660,18 @@ function showCloudView(view) {
 
 function updateCloudDialogView() {
   if (!cloudConfig) {
-    showCloudView("setup");
-    elements.cloudUrl.value = elements.cloudUrl.value || "";
-    elements.cloudAnonKey.value = elements.cloudAnonKey.value || "";
+    showCloudView("auth");
+    elements.cloudEmail.value = elements.cloudEmail.value || "";
+    elements.cloudPassword.value = "";
+    elements.cloudLoginButton.disabled = true;
+    elements.cloudRegisterButton.disabled = true;
+    setCloudMessage(elements.cloudAuthError, "登录服务暂时不可用，请联系网站管理员。");
     setCloudStatus("local");
     return;
   }
 
-  elements.cloudUrl.value = cloudConfig.supabaseUrl;
-  elements.cloudAnonKey.value = cloudConfig.supabaseAnonKey;
+  elements.cloudLoginButton.disabled = false;
+  elements.cloudRegisterButton.disabled = false;
 
   if (!cloudSession) {
     showCloudView("auth");
@@ -3711,7 +3684,6 @@ function updateCloudDialogView() {
   const currentStatus = cloudStatus === "error" ? "error" : (cloudStatus === "syncing" ? "syncing" : "synced");
   setCloudStatus(currentStatus);
 }
-
 function openCloudDialog() {
   updateCloudDialogView();
   if (!elements.cloudDialog.open) elements.cloudDialog.showModal();
@@ -3932,38 +3904,11 @@ async function registerCloudAccount(email, password) {
   return "注册成功，请先查收邮箱并完成验证，然后返回这里登录。";
 }
 
-function saveCloudConfigFromForm() {
-  try {
-    const url = elements.cloudUrl.value.trim().replace(/\/+$/, "");
-    const key = elements.cloudAnonKey.value.trim();
-    if (!/^https?:\/\//i.test(url)) throw new Error("请填写以 https:// 开头的 Supabase 项目地址。");
-    if (key.length < 20) throw new Error("请填写正确的 anon 或 publishable key。");
-    persistCloudConfig({ supabaseUrl: url, supabaseAnonKey: key });
-    resetCloudSessionState("configured");
-    setCloudMessage(elements.cloudSetupError, "");
-    updateCloudDialogView();
-    showToast("云同步连接设置已保存。");
-  } catch (error) {
-    setCloudMessage(elements.cloudSetupError, error.message);
-  }
-}
-
-function editCloudConfig() {
-  resetCloudSessionState("local");
-  cloudConfig = null;
-  try {
-    localStorage.removeItem(CLOUD_CONFIG_KEY);
-  } catch (error) {
-    // Ignore storage errors when resetting the connection.
-  }
-  updateCloudDialogView();
-}
-
 async function syncCloudNow() {
   elements.cloudSyncNowButton.disabled = true;
   try {
     const success = cloudDirty ? await pushCloudSnapshot() : await pullCloudSnapshot(false);
-    showToast(success ? "云同步已完成。" : "同步失败，请检查网络设置。");
+    showToast(success ? "同步已完成。" : "同步失败，请检查网络设置。");
   } finally {
     elements.cloudSyncNowButton.disabled = false;
   }
@@ -3984,7 +3929,7 @@ async function uploadLocalToCloud() {
 function signOutCloud() {
   resetCloudSessionState("configured");
   updateCloudDialogView();
-  showToast("已退出云同步账户，本机数据仍然保留。");
+  showToast("已退出登录，本机数据仍然保留。");
 }
 function bindEvents() {
   bindSortableList(elements.selectedHabits, (ids) => {
@@ -4008,14 +3953,9 @@ function bindEvents() {
   elements.cloudDialog.addEventListener("click", (event) => {
     if (event.target === elements.cloudDialog) closeCloudDialog();
   });
-  elements.saveCloudConfigButton.addEventListener("click", saveCloudConfigFromForm);
-  elements.editCloudConfigButton.addEventListener("click", editCloudConfig);
-  elements.changeCloudConfigButton.addEventListener("click", editCloudConfig);
   elements.cloudSignOutButton.addEventListener("click", signOutCloud);
   elements.cloudSyncNowButton.addEventListener("click", syncCloudNow);
   elements.cloudUploadLocalButton.addEventListener("click", uploadLocalToCloud);
-  elements.cloudUrl.addEventListener("input", () => setCloudMessage(elements.cloudSetupError, ""));
-  elements.cloudAnonKey.addEventListener("input", () => setCloudMessage(elements.cloudSetupError, ""));
   elements.cloudEmail.addEventListener("input", () => setCloudMessage(elements.cloudAuthError, ""));
   elements.cloudPassword.addEventListener("input", () => setCloudMessage(elements.cloudAuthError, ""));
 
@@ -4033,7 +3973,7 @@ function bindEvents() {
     try {
       await loginToCloud(email, password);
       setCloudMessage(elements.cloudAuthError, "");
-      showToast("云同步登录成功。");
+      showToast("登录成功，数据已同步。");
     } catch (error) {
       setCloudMessage(elements.cloudAuthError, error.message);
     } finally {
@@ -4059,7 +3999,7 @@ function bindEvents() {
         showToast("请检查邮箱完成账户验证。");
       } else {
         setCloudMessage(elements.cloudAuthError, "");
-        showToast("云同步账户已创建。");
+        showToast("账户已创建，数据开始同步。");
       }
     } catch (error) {
       setCloudMessage(elements.cloudAuthError, error.message);
