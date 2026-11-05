@@ -1,0 +1,4200 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1f3b32" />
+  <meta name="description" content="以月历为主导的简洁习惯打卡页面。" />
+  <title>习惯打卡 · 月历</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='28' fill='%231f3b32'/%3E%3Cpath d='m28 51 15 15 30-33' fill='none' stroke='%23d9e9a6' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <style>
+
+:root {
+  --bg: #f3f1eb;
+  --surface: #fffdf8;
+  --surface-soft: #f7f6f1;
+  --ink: #20352e;
+  --ink-soft: #4e625a;
+  --muted: #849089;
+  --line: #e7e4db;
+  --green: #9ebd5d;
+  --green-deep: #718f43;
+  --green-pale: #edf3df;
+  --dark: #1f3b32;
+  --danger: #b95a4d;
+  --shadow: 0 18px 48px rgba(42, 58, 49, 0.07);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 7% 3%, rgba(214, 227, 185, 0.54), transparent 26%),
+    radial-gradient(circle at 96% 38%, rgba(238, 217, 187, 0.42), transparent 24%),
+    linear-gradient(180deg, #f7f5ef 0%, var(--bg) 64%, #efede6 100%);
+  font-family: "Microsoft YaHei UI", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(158, 189, 93, 0.42);
+  outline-offset: 3px;
+}
+
+.ambient {
+  position: fixed;
+  z-index: 0;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.ambient-one {
+  top: 84px;
+  right: -120px;
+  width: 310px;
+  height: 310px;
+  border: 1px solid rgba(82, 108, 87, 0.1);
+}
+
+.ambient-two {
+  left: -180px;
+  bottom: 40px;
+  width: 390px;
+  height: 390px;
+  background: rgba(226, 218, 197, 0.22);
+}
+
+.app-shell {
+  position: relative;
+  z-index: 1;
+  width: min(1320px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 22px 0 20px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 46px;
+  margin-bottom: 23px;
+}
+
+.brand-mark {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 15px;
+  color: #e7f0c4;
+  background: var(--dark);
+  box-shadow: 0 8px 20px rgba(31, 59, 50, 0.17);
+  text-decoration: none;
+}
+
+.brand-mark svg {
+  width: 23px;
+  height: 23px;
+}
+
+.primary-button,
+.secondary-button,
+.danger-button,
+.soft-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 17px;
+  border: 0;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 170ms ease, box-shadow 170ms ease, background 170ms ease, border-color 170ms ease;
+}
+
+.primary-button {
+  color: #f9fcef;
+  background: var(--dark);
+  box-shadow: 0 8px 20px rgba(31, 59, 50, 0.15);
+}
+
+.primary-button:hover {
+  background: #294a3f;
+  box-shadow: 0 10px 24px rgba(31, 59, 50, 0.2);
+  transform: translateY(-1px);
+}
+
+.primary-button:active,
+.secondary-button:active,
+.soft-button:active,
+.icon-button:active {
+  transform: translateY(1px);
+}
+
+.primary-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.secondary-button {
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  background: #fff;
+}
+
+.secondary-button:hover {
+  background: #f9f8f4;
+}
+
+.danger-button {
+  min-height: 38px;
+  padding: 0 13px;
+  color: var(--danger);
+  background: transparent;
+}
+
+.danger-button:hover {
+  background: #fbefec;
+}
+
+.soft-button {
+  min-height: 32px;
+  padding: 0 11px;
+  border: 1px solid #e3e5d9;
+  color: var(--green-deep);
+  background: #f6f8ee;
+  font-size: 10px;
+}
+
+.soft-button:hover {
+  border-color: #cfd9b8;
+  background: #f0f4e5;
+}
+
+.soft-button[hidden] {
+  display: none;
+}
+
+.planner-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 338px;
+  align-items: start;
+  gap: 20px;
+}
+
+.card {
+  border: 1px solid rgba(213, 212, 203, 0.62);
+  border-radius: 25px;
+  background: rgba(255, 253, 248, 0.9);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(15px);
+}
+
+.month-card {
+  min-width: 0;
+  padding: 25px 25px 16px;
+}
+
+.month-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.section-kicker {
+  margin: 0;
+  color: var(--green-deep);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.month-header h1 {
+  margin: 7px 0 0;
+  color: var(--ink);
+  font-size: 30px;
+  font-weight: 760;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #f8f7f2;
+}
+
+.calendar-nav button {
+  display: grid;
+  height: 30px;
+  padding: 0 8px;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  color: var(--ink-soft);
+  background: transparent;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 160ms ease, background 160ms ease;
+}
+
+.calendar-nav button:hover {
+  color: var(--ink);
+  background: #fff;
+}
+
+.calendar-nav svg {
+  width: 16px;
+  height: 16px;
+}
+
+.calendar-nav .month-today {
+  padding: 0 7px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.month-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 21px;
+  padding: 13px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.month-stats {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.month-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+.month-stat + .month-stat {
+  padding-left: 25px;
+  border-left: 1px solid var(--line);
+}
+
+.month-stat strong {
+  color: var(--ink);
+  font-family: "Segoe UI", "Microsoft YaHei UI", sans-serif;
+  font-size: 21px;
+  font-weight: 680;
+  line-height: 1;
+}
+
+.month-stat span {
+  color: var(--muted);
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.calendar-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 3px;
+}
+
+.legend-dot.done {
+  background: var(--green-deep);
+}
+
+.legend-dot.pending {
+  border: 1px solid #cbd2c6;
+  background: #f8f7f2;
+}
+
+.legend-dot.selected {
+  border: 1.5px solid var(--ink);
+  background: transparent;
+}
+
+.weekdays,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.weekdays {
+  margin: 15px 0 6px;
+}
+
+.weekdays span {
+  color: #939d97;
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.calendar-day {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 88px;
+  padding: 7px 7px 6px;
+  overflow: hidden;
+  flex-direction: column;
+  border: 1px solid #ece9e2;
+  border-radius: 11px;
+  color: var(--ink);
+  background: rgba(253, 252, 248, 0.75);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.calendar-day:hover {
+  z-index: 1;
+  border-color: #cbd4bf;
+  background: #fcfdf8;
+  box-shadow: 0 7px 18px rgba(44, 62, 52, 0.07);
+  transform: translateY(-1px);
+}
+
+.calendar-day.is-empty {
+  visibility: hidden;
+  cursor: default;
+}
+
+.calendar-day.is-future {
+  background: rgba(248, 247, 242, 0.52);
+}
+
+.calendar-day.is-complete {
+  border-color: #dfe7cf;
+  background: #f8faef;
+}
+
+.calendar-day.is-today {
+  border-color: #b9cb96;
+  background: #f4f7e9;
+}
+
+.calendar-day.is-selected {
+  border-color: var(--dark);
+  box-shadow: inset 0 0 0 1px var(--dark), 0 6px 17px rgba(31, 59, 50, 0.09);
+}
+
+.day-cell-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  min-height: 17px;
+}
+
+.day-number {
+  color: var(--ink-soft);
+  font-family: "Segoe UI", "Microsoft YaHei UI", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.calendar-day.is-future .day-number {
+  color: #aab2ad;
+}
+
+.calendar-day.is-today .day-number {
+  color: var(--ink);
+}
+
+.calendar-day.is-selected .day-number {
+  color: var(--dark);
+}
+
+.day-badge {
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: #f9fdef;
+  background: var(--green-deep);
+  font-size: 7px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.day-habits {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+  margin-top: 7px;
+}
+
+.habit-chip {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 3px;
+  padding: 3px 4px;
+  overflow: hidden;
+  border-radius: 5px;
+  color: #48543e;
+  background: #edf2e5;
+  background: color-mix(in srgb, var(--habit-color) 13%, #fff);
+  font-size: 8px;
+  line-height: 1.25;
+}
+
+.habit-chip.is-planned {
+  border: 1px dashed #dcded6;
+  color: #8b938e;
+  background: #f7f6f1;
+  opacity: 0.8;
+}
+
+.habit-chip-emoji {
+  flex: 0 0 auto;
+  font-size: 9px;
+  line-height: 1;
+}
+
+.habit-chip-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.habit-chip-more,
+.day-plan-label,
+.no-check {
+  color: #9aa39d;
+  font-size: 8px;
+  line-height: 1.3;
+}
+
+.habit-chip-more {
+  padding-left: 2px;
+}
+
+.day-plan-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.calendar-tip {
+  margin: 13px 1px 0;
+  color: #9aa29d;
+  font-size: 8px;
+  text-align: right;
+}
+
+.day-card {
+  position: sticky;
+  top: 20px;
+  min-width: 0;
+  padding: 24px 22px 14px;
+}
+
+.day-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.day-header h2 {
+  margin: 7px 0 3px;
+  color: var(--ink);
+  font-size: 27px;
+  font-weight: 760;
+  letter-spacing: -0.055em;
+  line-height: 1.1;
+}
+
+.selected-weekday {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.day-progress {
+  margin-top: 20px;
+  padding: 15px 14px 13px;
+  border-radius: 14px;
+  background: var(--surface-soft);
+}
+
+.day-progress-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--ink-soft);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.day-progress-top strong {
+  color: var(--ink);
+  font-family: "Segoe UI", "Microsoft YaHei UI", sans-serif;
+  font-size: 21px;
+  font-weight: 680;
+  line-height: 1;
+}
+
+.day-progress-top strong i {
+  margin: 0 3px;
+  color: #acb5ae;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.thin-progress {
+  height: 5px;
+  margin: 11px 0 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e7eadf;
+}
+
+.thin-progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #8eae52, #b4ce79);
+  transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.day-progress p {
+  min-height: 16px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+.selected-habits {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.detail-habit {
+  --habit-color: #7f9f61;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  min-height: 54px;
+  padding: 8px 8px 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: #faf9f5;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.detail-habit:hover {
+  border-color: #e5e3da;
+  background: #f8f7f2;
+}
+
+.detail-habit.is-completed {
+  border-color: #e3ead6;
+  background: #f5f8ed;
+}
+
+.detail-habit.is-future {
+  background: #faf9f6;
+}
+
+.detail-check {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  place-items: center;
+  border: 1.4px solid #ccd4c7;
+  border-radius: 8px;
+  color: #fff;
+  background: transparent;
+}
+
+button.detail-check {
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+button.detail-check:hover {
+  border-color: var(--green-deep);
+  transform: scale(1.04);
+}
+
+.detail-check svg {
+  width: 15px;
+  height: 15px;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 160ms ease, transform 190ms cubic-bezier(0.22, 1.4, 0.36, 1);
+}
+
+.detail-habit.is-completed .detail-check {
+  border-color: var(--green-deep);
+  background: var(--green-deep);
+}
+
+.detail-habit.is-completed .detail-check svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.detail-habit.is-future .detail-check {
+  border-style: dashed;
+  border-color: #d7dbd4;
+}
+
+.detail-avatar {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 10px;
+  background: #f1f3ed;
+  background: color-mix(in srgb, var(--habit-color) 14%, #fff);
+  font-size: 16px;
+}
+
+.detail-info {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.detail-name {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detail-meta {
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.detail-habit.is-completed .detail-meta {
+  color: var(--green-deep);
+}
+
+.detail-edit {
+  display: grid;
+  width: 27px;
+  height: 27px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  color: #99a39d;
+  background: transparent;
+  cursor: pointer;
+}
+
+.detail-edit:hover {
+  color: var(--ink);
+  background: #fff;
+}
+
+.detail-edit svg {
+  width: 15px;
+  height: 15px;
+}
+
+.day-empty {
+  display: grid;
+  justify-items: center;
+  padding: 42px 15px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.day-empty[hidden] {
+  display: none;
+}
+
+.day-empty span {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 10px;
+  place-items: center;
+  border-radius: 13px;
+  color: var(--green-deep);
+  background: var(--green-pale);
+  font-size: 19px;
+}
+
+.day-empty p {
+  margin: 0;
+  font-size: 10px;
+}
+
+.day-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 53px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.day-footer > span {
+  max-width: 190px;
+  color: var(--muted);
+  font-size: 8px;
+  line-height: 1.55;
+}
+
+.text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 0;
+  border: 0;
+  color: var(--green-deep);
+  background: transparent;
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.text-button:hover {
+  color: var(--ink);
+}
+
+.text-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.app-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 4px 0;
+  color: #9aa29c;
+  font-size: 8px;
+}
+
+.footer-motto {
+  letter-spacing: 0.12em;
+}
+
+.habit-dialog {
+  width: min(510px, calc(100% - 32px));
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 26px;
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: 0 30px 95px rgba(25, 42, 35, 0.3);
+}
+
+.habit-dialog::backdrop {
+  background: rgba(25, 42, 35, 0.48);
+  backdrop-filter: blur(8px);
+}
+
+.habit-dialog[open] {
+  animation: dialog-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.habit-dialog form {
+  padding: 28px 29px 25px;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 23px;
+}
+
+.dialog-header h2 {
+  margin: 7px 0 0;
+  color: var(--ink);
+  font-size: 23px;
+  font-weight: 730;
+  letter-spacing: -0.045em;
+}
+
+.icon-button {
+  display: grid;
+  width: 35px;
+  height: 35px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  background: #faf9f5;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.icon-button:hover {
+  color: var(--ink);
+  background: #f2f1eb;
+}
+
+.icon-button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.form-field {
+  display: grid;
+  gap: 8px;
+}
+
+.form-field label,
+.choice-fieldset legend {
+  color: var(--ink-soft);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.form-field input {
+  width: 100%;
+  height: 47px;
+  padding: 0 15px;
+  border: 1px solid #e3e0d7;
+  border-radius: 12px;
+  color: var(--ink);
+  background: #fbfaf6;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.form-field input::placeholder {
+  color: #adb4af;
+}
+
+.form-field input:focus {
+  border-color: #a8bd75;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(158, 189, 93, 0.13);
+}
+
+.form-field input.is-invalid {
+  border-color: #d69b91;
+  box-shadow: 0 0 0 4px rgba(185, 90, 77, 0.09);
+}
+
+.field-error {
+  min-height: 14px;
+  margin: -2px 2px 0;
+  color: var(--danger);
+  font-size: 9px;
+}
+
+.choice-fieldset {
+  margin: 15px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.choice-fieldset legend {
+  margin-bottom: 10px;
+}
+
+.emoji-options {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 7px;
+}
+
+.emoji-option,
+.color-option {
+  position: relative;
+  cursor: pointer;
+}
+
+.emoji-option input,
+.color-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.emoji-option span {
+  display: grid;
+  aspect-ratio: 1 / 1;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: #f5f3ed;
+  font-size: 17px;
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.emoji-option:hover span {
+  background: #efeee7;
+  transform: translateY(-1px);
+}
+
+.emoji-option input:checked + span {
+  border-color: #a8bd75;
+  background: #f0f5e4;
+  box-shadow: 0 0 0 3px rgba(158, 189, 93, 0.1);
+}
+
+.emoji-option input:focus-visible + span,
+.color-option input:focus-visible + span {
+  outline: 3px solid rgba(158, 189, 93, 0.34);
+  outline-offset: 2px;
+}
+
+.color-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.color-option span {
+  display: block;
+  width: 29px;
+  height: 29px;
+  border: 4px solid var(--surface);
+  border-radius: 999px;
+  background: var(--swatch);
+  box-shadow: 0 0 0 1px #e0ddd4;
+  transition: box-shadow 160ms ease, transform 160ms ease;
+}
+
+.color-option:hover span {
+  transform: scale(1.06);
+}
+
+.color-option input:checked + span {
+  box-shadow: 0 0 0 2px var(--ink);
+  transform: scale(0.92);
+}
+
+.dialog-tip {
+  margin: 20px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: #7c896f;
+  background: #f5f7ee;
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 23px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.dialog-actions-right {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.danger-button.is-armed {
+  color: #fff;
+  background: var(--danger);
+}
+
+.toast {
+  position: fixed;
+  z-index: 20;
+  bottom: 22px;
+  left: 50%;
+  max-width: calc(100% - 32px);
+  padding: 10px 16px;
+  border-radius: 11px;
+  color: #f8fbf1;
+  background: rgba(31, 59, 50, 0.94);
+  box-shadow: 0 12px 35px rgba(31, 59, 50, 0.2);
+  font-size: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 12px);
+  transition: opacity 180ms ease, transform 180ms ease;
+  backdrop-filter: blur(8px);
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (max-width: 1080px) {
+  .planner-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .day-card {
+    position: static;
+    display: grid;
+    grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.28fr);
+    align-items: start;
+    column-gap: 24px;
+  }
+
+  .day-header,
+  .day-progress,
+  .day-footer {
+    grid-column: 1;
+  }
+
+  .selected-habits,
+  .day-empty {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    margin-top: 0;
+  }
+
+  .day-footer {
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    width: min(100% - 24px, 680px);
+    padding-top: 14px;
+  }
+
+  .topbar {
+    margin-bottom: 14px;
+  }
+
+  .month-card {
+    padding: 19px 14px 13px;
+    border-radius: 21px;
+  }
+
+  .month-header h1 {
+    font-size: 25px;
+  }
+
+  .month-toolbar {
+    align-items: flex-start;
+    gap: 14px;
+    margin-top: 16px;
+    padding: 11px 0;
+  }
+
+  .month-stats {
+    flex-wrap: wrap;
+    gap: 9px 15px;
+  }
+
+  .month-stat + .month-stat {
+    padding-left: 15px;
+  }
+
+  .month-stat strong {
+    font-size: 18px;
+  }
+
+  .calendar-legend {
+    display: none;
+  }
+
+  .weekdays {
+    margin-top: 11px;
+    gap: 3px;
+  }
+
+  .weekdays span {
+    font-size: 8px;
+  }
+
+  .calendar-grid {
+    gap: 4px;
+  }
+
+  .calendar-day {
+    min-height: 59px;
+    padding: 5px;
+    border-radius: 8px;
+  }
+
+  .day-number {
+    font-size: 10px;
+  }
+
+  .day-badge {
+    display: none;
+  }
+
+  .day-habits {
+    gap: 2px;
+    margin-top: 5px;
+  }
+
+  .habit-chip {
+    width: 16px;
+    height: 15px;
+    justify-content: center;
+    padding: 1px;
+    border-radius: 4px;
+    background: #edf2e5;
+  }
+
+  .habit-chip.is-planned {
+    background: #f4f3ee;
+  }
+
+  .habit-chip-emoji {
+    font-size: 8px;
+  }
+
+  .habit-chip-text,
+  .habit-chip-more,
+  .day-plan-label,
+  .no-check {
+    display: none;
+  }
+
+  .calendar-tip {
+    margin-top: 9px;
+    font-size: 7px;
+    text-align: left;
+  }
+
+  .day-card {
+    display: block;
+    padding: 20px 17px 13px;
+    border-radius: 21px;
+  }
+
+  .selected-habits {
+    margin-top: 16px;
+  }
+
+  .detail-habit {
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+  }
+
+  .day-footer {
+    margin-top: 13px;
+  }
+
+  .app-footer {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 420px) {
+  .calendar-day {
+    min-height: 53px;
+    padding: 4px;
+  }
+
+  .day-habits {
+    margin-top: 4px;
+  }
+
+  .month-stats {
+    gap: 8px 12px;
+  }
+
+  .month-stat + .month-stat {
+    padding-left: 12px;
+  }
+
+  .topbar > .primary-button {
+    font-size: 0;
+    gap: 0;
+    width: 40px;
+    padding: 0;
+  }
+
+  .topbar > .primary-button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .habit-dialog form {
+    padding: 23px 19px 21px;
+  }
+
+  .emoji-options {
+    gap: 5px;
+  }
+
+  .emoji-option span {
+    font-size: 15px;
+  }
+
+  .dialog-actions {
+    align-items: flex-end;
+  }
+
+  .danger-button {
+    padding-right: 0;
+    padding-left: 0;
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+.calendar-day.is-outside {
+  border-color: #f0ede7;
+  background: rgba(250, 249, 245, 0.34);
+}
+
+.calendar-day.is-outside .day-number {
+  color: #c0c6c1;
+}
+
+.calendar-day.is-outside.is-complete {
+  border-color: #f0ede7;
+  background: rgba(250, 249, 245, 0.34);
+}
+
+.outside-month,
+.outside-status {
+  display: block;
+  margin-top: 3px;
+  color: #b5bcb7;
+  font-size: 7px;
+  line-height: 1.3;
+}
+
+.outside-status {
+  color: #a7b197;
+}
+
+@media (max-width: 760px) {
+  .outside-month,
+  .outside-status {
+    display: none;
+  }
+}
+  
+/* Top motivation and habit management */
+.motivation {
+  display: flex;
+  align-items: flex-start;
+  min-width: 0;
+  gap: 10px;
+  padding-right: 24px;
+}
+
+.motivation-mark {
+  flex: 0 0 auto;
+  margin-top: -6px;
+  color: #a7bd80;
+  font-family: Georgia, serif;
+  font-size: 32px;
+  line-height: 1;
+}
+
+.motivation p {
+  max-width: 720px;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 560;
+  line-height: 1.65;
+}
+
+.app-footer {
+  justify-content: flex-start;
+}
+
+.manager-dialog {
+  width: min(560px, calc(100% - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  border-radius: 26px;
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: 0 30px 95px rgba(25, 42, 35, 0.3);
+}
+
+.manager-dialog::backdrop {
+  background: rgba(25, 42, 35, 0.48);
+  backdrop-filter: blur(8px);
+}
+
+.manager-dialog[open] {
+  animation: dialog-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.manager-content {
+  display: flex;
+  max-height: calc(100vh - 32px);
+  padding: 28px 29px 24px;
+  flex-direction: column;
+}
+
+.manager-description {
+  margin: -6px 0 18px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.managed-habits {
+  display: grid;
+  gap: 8px;
+  overflow-y: auto;
+  padding: 2px 2px 4px;
+}
+
+.managed-habit {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  min-height: 58px;
+  padding: 9px 10px;
+  border: 1px solid #ece9e1;
+  border-radius: 13px;
+  background: #faf9f5;
+}
+
+.managed-avatar {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 10px;
+  background: #f1f3ed;
+  background: color-mix(in srgb, var(--habit-color) 14%, #fff);
+  font-size: 17px;
+}
+
+.managed-info {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.managed-name {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.managed-scope {
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.managed-delete {
+  min-width: 54px;
+  height: 29px;
+  padding: 0 9px;
+  border: 1px solid #eadbd7;
+  border-radius: 8px;
+  color: var(--danger);
+  background: #fffaf8;
+  font-size: 9px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.managed-delete:hover {
+  background: #fbefec;
+}
+
+.managed-delete.is-armed {
+  border-color: var(--danger);
+  color: #fff;
+  background: var(--danger);
+}
+
+.manager-empty {
+  padding: 35px 15px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.manager-empty[hidden] {
+  display: none;
+}
+
+.manager-empty p {
+  margin: 0;
+  font-size: 10px;
+}
+
+.manager-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 18px;
+  padding-top: 17px;
+  border-top: 1px solid var(--line);
+}
+
+.manager-footer > span {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.manager-footer strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.detail-remove {
+  display: grid;
+  width: 27px;
+  height: 27px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  color: #b59a93;
+  background: transparent;
+  cursor: pointer;
+}
+
+.detail-remove:hover {
+  color: var(--danger);
+  background: #fbefec;
+}
+
+.detail-remove svg {
+  width: 14px;
+  height: 14px;
+}
+
+.detail-habit.is-future {
+  background: #faf9f6;
+}
+
+.dialog-actions {
+  justify-content: flex-end;
+}
+
+@media (max-width: 760px) {
+  .motivation {
+    padding-right: 12px;
+  }
+
+  .motivation p {
+    font-size: 11px;
+    line-height: 1.55;
+  }
+
+  .motivation-mark {
+    font-size: 27px;
+  }
+
+  .manager-content {
+    padding: 23px 19px 20px;
+  }
+
+  .manager-footer {
+    align-items: flex-end;
+  }
+}
+
+@media (max-width: 420px) {
+  .motivation p {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .manager-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .manager-footer .primary-button {
+    width: 100%;
+  }
+}
+  
+/* Legibility and stronger calendar boundaries */
+:root {
+  --ink-soft: #3d5149;
+  --muted: #65726b;
+  --line: #d9d5c9;
+}
+
+.card {
+  border-color: rgba(184, 182, 170, 0.74);
+}
+
+.calendar-nav,
+.month-toolbar,
+.day-footer,
+.dialog-actions,
+.manager-footer {
+  border-color: var(--line);
+}
+
+.calendar-day {
+  border-color: #d9d5ca;
+}
+
+.calendar-day:hover {
+  border-color: #b6c0ac;
+}
+
+.calendar-day.is-complete {
+  border-color: #d2ddc0;
+}
+
+.calendar-day.is-today {
+  border-color: #aabd83;
+}
+
+.calendar-day.is-selected {
+  border-color: var(--dark);
+}
+
+.weekdays span {
+  color: #6e7a73;
+}
+
+.calendar-day.is-future .day-number {
+  color: #7d8982;
+}
+
+.habit-chip.is-planned {
+  border-color: #d1d4cc;
+  color: #6f7a74;
+}
+
+.habit-chip-more,
+.day-plan-label,
+.no-check,
+.calendar-tip,
+.app-footer {
+  color: #707c75;
+}
+
+.day-progress-top strong i {
+  color: #7f8b84;
+}
+
+.detail-remove {
+  color: #9d7f78;
+}
+
+.form-field input {
+  border-color: #d4cfc3;
+}
+
+.form-field input::placeholder {
+  color: #89938d;
+}
+
+.dialog-tip {
+  color: #64735f;
+}
+
+.managed-habit {
+  border-color: #ddd8cd;
+}
+
+.managed-scope,
+.manager-description,
+.manager-footer > span {
+  color: #69766f;
+}
+
+.outside-month,
+.outside-status {
+  color: #7d8881;
+}
+/* Draggable habit ordering */
+.drag-handle {
+  display: grid;
+  width: 15px;
+  height: 28px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  color: #89958e;
+  background: transparent;
+  cursor: grab;
+}
+
+.drag-handle:hover {
+  color: var(--ink-soft);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-handle svg {
+  width: 11px;
+  height: 19px;
+}
+
+.detail-habit {
+  grid-template-columns: auto auto auto minmax(0, 1fr) auto;
+  gap: 7px;
+}
+
+.managed-habit {
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.detail-habit.is-dragging,
+.managed-habit.is-dragging {
+  border-style: dashed;
+  opacity: 0.48;
+}
+/* Share and edit controls */
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.topbar-actions .secondary-button,
+.topbar-actions .primary-button {
+  min-height: 40px;
+}
+
+.secondary-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.day-footer {
+  justify-content: flex-end;
+}
+
+.detail-habit {
+  grid-template-columns: auto auto auto minmax(0, 1fr) auto auto;
+}
+
+.detail-edit {
+  display: grid;
+  width: 27px;
+  height: 27px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  color: #7c8a83;
+  background: transparent;
+  cursor: pointer;
+}
+
+.detail-edit:hover {
+  color: var(--ink);
+  background: #f0f3e9;
+}
+
+.detail-edit svg {
+  width: 14px;
+  height: 14px;
+}
+
+.managed-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.managed-edit {
+  min-width: 44px;
+  height: 29px;
+  padding: 0 8px;
+  border: 1px solid #d8ddd1;
+  border-radius: 8px;
+  color: var(--green-deep);
+  background: #f7f9f2;
+  font-size: 9px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.managed-edit:hover {
+  border-color: #bdcba6;
+  background: #f0f5e4;
+}
+
+@media (max-width: 420px) {
+  .topbar-actions {
+    gap: 6px;
+  }
+
+  .topbar-actions .primary-button,
+  .topbar-actions .secondary-button {
+    width: 40px;
+    padding: 0;
+    gap: 0;
+    font-size: 0;
+  }
+
+  .topbar-actions .primary-button svg,
+  .topbar-actions .secondary-button svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+/* Cloud sync */
+.cloud-button {
+  gap: 6px;
+}
+
+.cloud-status-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #9aa39d;
+  box-shadow: 0 0 0 3px rgba(154, 163, 157, 0.12);
+}
+
+#cloudButton[data-status="configured"] .cloud-status-dot,
+#cloudStatusDotLarge[data-status="configured"] {
+  background: #d5a257;
+  box-shadow: 0 0 0 3px rgba(213, 162, 87, 0.13);
+}
+
+#cloudButton[data-status="syncing"] .cloud-status-dot,
+#cloudStatusDotLarge[data-status="syncing"] {
+  background: #6f94b2;
+  box-shadow: 0 0 0 3px rgba(111, 148, 178, 0.14);
+}
+
+#cloudButton[data-status="synced"] .cloud-status-dot,
+#cloudStatusDotLarge[data-status="synced"] {
+  background: #718f43;
+  box-shadow: 0 0 0 3px rgba(113, 143, 67, 0.13);
+}
+
+#cloudButton[data-status="error"] .cloud-status-dot,
+#cloudStatusDotLarge[data-status="error"] {
+  background: #b95a4d;
+  box-shadow: 0 0 0 3px rgba(185, 90, 77, 0.12);
+}
+
+.cloud-dialog {
+  width: min(520px, calc(100% - 32px));
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 26px;
+  color: var(--ink);
+  background: var(--surface);
+  box-shadow: 0 30px 95px rgba(25, 42, 35, 0.3);
+}
+
+.cloud-dialog::backdrop {
+  background: rgba(25, 42, 35, 0.48);
+  backdrop-filter: blur(8px);
+}
+
+.cloud-dialog[open] {
+  animation: dialog-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cloud-content {
+  padding: 28px 29px 25px;
+}
+
+.cloud-view[hidden] {
+  display: none;
+}
+
+.cloud-description {
+  margin: -7px 0 19px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.75;
+}
+
+.cloud-content .form-field + .form-field {
+  margin-top: 12px;
+}
+
+.cloud-note {
+  margin: 12px 2px 0;
+  color: #7c6b57;
+  font-size: 8px;
+  line-height: 1.65;
+}
+
+.cloud-error {
+  min-height: 17px;
+  margin: 8px 2px 2px;
+  color: var(--danger);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.cloud-full-button {
+  width: 100%;
+  margin-top: 5px;
+}
+
+.cloud-help {
+  margin-top: 18px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  color: var(--muted);
+  background: #f5f7ee;
+  font-size: 9px;
+  line-height: 1.65;
+}
+
+.cloud-help summary {
+  color: var(--ink-soft);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cloud-help p {
+  margin: 8px 0 0;
+}
+
+.cloud-auth-form {
+  display: grid;
+  gap: 12px;
+}
+
+.cloud-auth-actions,
+.cloud-account-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.cloud-auth-actions > button,
+.cloud-account-actions > button {
+  flex: 1;
+}
+
+.cloud-link-button {
+  padding: 7px 0;
+  border: 0;
+  color: var(--green-deep);
+  background: transparent;
+  font-size: 9px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.cloud-link-button:hover {
+  color: var(--ink);
+}
+
+.cloud-auth-form + .cloud-link-button {
+  margin-top: 14px;
+}
+
+.cloud-account-card {
+  display: grid;
+  gap: 5px;
+  padding: 14px 15px;
+  border: 1px solid #dde2d4;
+  border-radius: 13px;
+  background: #f7f9f2;
+}
+
+.cloud-account-card span {
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.cloud-account-card strong {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cloud-sync-panel {
+  margin-top: 11px;
+  padding: 13px 15px;
+  border-radius: 13px;
+  background: #faf9f5;
+}
+
+.cloud-status-line {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.cloud-status-line i {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #9aa39d;
+  box-shadow: 0 0 0 3px rgba(154, 163, 157, 0.12);
+}
+
+.cloud-status-line strong {
+  color: var(--ink);
+  font-size: 11px;
+}
+
+.cloud-sync-panel p {
+  margin: 8px 0 0 17px;
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.cloud-account-actions {
+  margin-top: 15px;
+}
+
+.cloud-account-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 15px;
+  padding-top: 13px;
+  border-top: 1px solid var(--line);
+}
+
+.cloud-signout {
+  color: var(--danger);
+}
+
+.cloud-button:disabled,
+.cloud-dialog button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+@media (max-width: 520px) {
+  .topbar-actions {
+    gap: 5px;
+  }
+
+  .topbar-actions .secondary-button,
+  .topbar-actions .primary-button {
+    width: 38px;
+    padding: 0;
+    gap: 0;
+    font-size: 0;
+  }
+
+  .topbar-actions .cloud-status-dot {
+    position: absolute;
+    margin: -18px 0 0 22px;
+  }
+
+  .cloud-button {
+    position: relative;
+  }
+
+  .cloud-content {
+    padding: 23px 19px 21px;
+  }
+
+  .cloud-auth-actions,
+  .cloud-account-actions {
+    flex-direction: column;
+  }
+}
+.cloud-error.is-info {
+  color: var(--green-deep);
+}</style>
+</head>
+<body>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="motivation" aria-label="今日激励语">
+        <span class="motivation-mark" aria-hidden="true">“</span>
+        <p id="motivationText">把想做的事，变成每天都会做的小事。</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="secondary-button cloud-button" id="cloudButton" type="button" data-status="local">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18h9.5a4 4 0 0 0 .4-8A6 6 0 0 0 6 9.5 4.5 4.5 0 0 0 7 18Zm5-9v6m0-6-2 2m2-2 2 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="cloud-status-dot" id="cloudStatusDot" aria-hidden="true"></span>
+          <span id="cloudButtonLabel">云同步</span>
+        </button>        <button class="secondary-button" id="shareButton" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0 4 4m-4-4L8 7M5 12v7h14v-7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          分享
+        </button>
+        <button class="primary-button" id="manageHabitsButton" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          习惯管理
+        </button>
+      </div>
+    </header>
+
+    <main class="planner-grid">
+      <article class="card month-card" aria-labelledby="calendarTitle">
+        <header class="month-header">
+          <div>
+            <p class="section-kicker">HABIT CALENDAR</p>
+            <h1 id="calendarTitle">2026年11月</h1>
+          </div>
+          <nav class="calendar-nav" aria-label="切换月份">
+            <button type="button" id="previousMonth" aria-label="上个月">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button type="button" class="month-today" id="currentMonth">今天</button>
+            <button type="button" id="nextMonth" aria-label="下个月">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </nav>
+        </header>
+
+        <div class="month-toolbar">
+          <div class="month-stats" aria-label="月度统计">
+            <div class="month-stat">
+              <strong id="monthCheckinDays">0</strong>
+              <span id="monthCheckinLabel">本月打卡</span>
+            </div>
+          </div>
+          <div class="calendar-legend" aria-hidden="true">
+            <span><i class="legend-dot done"></i>已完成</span>
+            <span><i class="legend-dot pending"></i>待完成</span>
+          </div>
+        </div>
+
+        <div class="weekdays" aria-hidden="true">
+          <span>周一</span><span>周二</span><span>周三</span><span>周四</span><span>周五</span><span>周六</span><span>周日</span>
+        </div>
+        <div class="calendar-grid" id="calendarGrid" role="grid" aria-label="习惯打卡月历"></div>
+      </article>
+
+      <aside class="card day-card" aria-labelledby="selectedDateTitle">
+        <header class="day-header">
+          <div>
+            <p class="section-kicker" id="selectedDayKicker">SELECTED DAY</p>
+            <h2 id="selectedDateTitle">11月1日</h2>
+            <p class="selected-weekday" id="selectedWeekday">星期日 · 今天</p>
+          </div>
+          <button class="soft-button" id="goTodayButton" type="button" hidden>回到今天</button>
+        </header>
+
+        <section class="day-progress" aria-label="当天完成情况">
+          <div class="day-progress-top">
+            <span>完成情况</span>
+            <strong><span id="selectedCompleted">0</span><i>/</i><span id="selectedTotal">0</span></strong>
+          </div>
+          <div class="thin-progress" aria-hidden="true"><span id="selectedProgressBar"></span></div>
+          <p id="selectedStatusText">从第一个小勾开始。</p>
+        </section>
+
+        <div class="selected-habits" id="selectedHabits"></div>
+
+        <div class="day-empty" id="selectedEmpty" hidden>
+          <span aria-hidden="true">○</span>
+          <p>这一天还没有可记录的习惯。</p>
+        </div>
+
+        <footer class="day-footer">
+          <button class="text-button" id="inlineAddButton" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            添加当天习惯
+          </button>
+        </footer>
+      </aside>
+    </main>
+
+    <footer class="app-footer">
+      <span>记录仅保存在当前浏览器</span>
+    </footer>
+  </div>
+
+  <dialog class="cloud-dialog" id="cloudDialog" aria-labelledby="cloudTitle">
+    <div class="cloud-content">
+      <header class="dialog-header">
+        <div>
+          <p class="section-kicker">CLOUD SYNC</p>
+          <h2 id="cloudTitle">云同步</h2>
+        </div>
+        <button class="icon-button" id="closeCloudButton" type="button" aria-label="关闭">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </header>
+
+      <section class="cloud-view" id="cloudSetupView">
+        <p class="cloud-description">连接你的 Supabase 项目后，可以在不同设备登录同一账户并自动同步打卡数据。</p>
+        <div class="form-field">
+          <label for="cloudUrl">Supabase 项目地址</label>
+          <input id="cloudUrl" type="url" autocomplete="off" placeholder="https://xxxx.supabase.co" />
+        </div>
+        <div class="form-field">
+          <label for="cloudAnonKey">Publishable key / anon key</label>
+          <input id="cloudAnonKey" type="password" autocomplete="off" placeholder="填写公开密钥" />
+        </div>
+        <p class="cloud-note">只填写公开密钥，不要填写 service_role 私密密钥。该密钥可以安全地放在前端。</p>
+        <p class="cloud-error" id="cloudSetupError" role="alert"></p>
+        <button class="primary-button cloud-full-button" id="saveCloudConfigButton" type="button">保存连接设置</button>
+        <details class="cloud-help">
+          <summary>如何获取这些配置？</summary>
+          <p>先在 Supabase 创建项目，在 Project Settings → API 中找到 Project URL 和 anon/publishable key。数据库表结构请参考项目中的 supabase-setup.sql。</p>
+        </details>
+      </section>
+
+      <section class="cloud-view" id="cloudAuthView" hidden>
+        <p class="cloud-description">使用邮箱和密码登录。第一次使用请先注册，电脑和手机登录同一个账户即可同步。</p>
+        <form class="cloud-auth-form" id="cloudAuthForm">
+          <div class="form-field">
+            <label for="cloudEmail">邮箱</label>
+            <input id="cloudEmail" type="email" autocomplete="email" placeholder="name@example.com" />
+          </div>
+          <div class="form-field">
+            <label for="cloudPassword">密码</label>
+            <input id="cloudPassword" type="password" autocomplete="current-password" placeholder="至少 6 位" />
+          </div>
+          <p class="cloud-error" id="cloudAuthError" role="alert"></p>
+          <div class="cloud-auth-actions">
+            <button class="primary-button" id="cloudLoginButton" type="submit">登录</button>
+            <button class="secondary-button" id="cloudRegisterButton" type="button">注册新账户</button>
+          </div>
+        </form>
+        <button class="cloud-link-button" id="editCloudConfigButton" type="button">修改连接设置</button>
+      </section>
+
+      <section class="cloud-view" id="cloudAccountView" hidden>
+        <div class="cloud-account-card">
+          <span>当前账户</span>
+          <strong id="cloudUserEmail">—</strong>
+        </div>
+        <div class="cloud-sync-panel">
+          <div class="cloud-status-line">
+            <i id="cloudStatusDotLarge" aria-hidden="true"></i>
+            <strong id="cloudStatusText">等待同步</strong>
+          </div>
+          <p id="cloudLastSync">尚未同步</p>
+        </div>
+        <div class="cloud-account-actions">
+          <button class="primary-button" id="cloudSyncNowButton" type="button">立即同步</button>
+          <button class="secondary-button" id="cloudUploadLocalButton" type="button">上传本机数据</button>
+        </div>
+        <div class="cloud-account-footer">
+          <button class="cloud-link-button" id="changeCloudConfigButton" type="button">更换云项目</button>
+          <button class="cloud-link-button cloud-signout" id="cloudSignOutButton" type="button">退出登录</button>
+        </div>
+      </section>
+    </div>
+  </dialog>
+  <dialog class="manager-dialog" id="managerDialog" aria-labelledby="managerTitle">
+    <div class="manager-content">
+      <header class="dialog-header">
+        <div>
+          <p class="section-kicker">HABIT LIBRARY</p>
+          <h2 id="managerTitle">习惯管理</h2>
+        </div>
+        <button class="icon-button" id="closeManagerButton" type="button" aria-label="关闭">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </header>
+      <p class="manager-description">这里的习惯会应用到所有日期。拖动左侧圆点可调整顺序，右侧卡片中添加或移除的习惯只影响所选当天。</p>
+      <div class="managed-habits" id="managedHabits"></div>
+      <div class="manager-empty" id="managerEmpty" hidden>
+        <p>还没有全局习惯，添加一个开始吧。</p>
+      </div>
+      <footer class="manager-footer">
+        <span>共 <strong id="globalHabitCount">0</strong> 个全局习惯</span>
+        <button class="primary-button" id="addGlobalHabitButton" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          添加全局习惯
+        </button>
+      </footer>
+    </div>
+  </dialog>
+
+  <dialog class="habit-dialog" id="habitDialog" aria-labelledby="dialogTitle">
+    <form id="habitForm" novalidate>
+      <header class="dialog-header">
+        <div>
+          <p class="section-kicker" id="dialogKicker">NEW RITUAL</p>
+          <h2 id="dialogTitle">添加习惯</h2>
+        </div>
+        <button class="icon-button" id="closeDialogButton" type="button" aria-label="关闭">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </header>
+
+      <div class="form-field">
+        <label for="habitName">习惯名称</label>
+        <input id="habitName" name="habitName" type="text" maxlength="20" autocomplete="off" placeholder="例如：阅读 20 分钟" />
+        <p class="field-error" id="nameError" role="alert"></p>
+      </div>
+
+      <fieldset class="choice-fieldset">
+        <legend>选择一个图标</legend>
+        <div class="emoji-options" id="emojiOptions"></div>
+      </fieldset>
+
+      <fieldset class="choice-fieldset">
+        <legend>标记颜色</legend>
+        <div class="color-options" id="colorOptions"></div>
+      </fieldset>
+
+      <p class="dialog-tip" id="dialogScope">这个习惯会应用到所有日期。</p>
+
+      <div class="dialog-actions">
+        <div class="dialog-actions-right">
+          <button class="secondary-button" id="cancelDialogButton" type="button">取消</button>
+          <button class="primary-button" id="saveHabitButton" type="submit">添加习惯</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+const STORAGE_KEY = "weiguang-habit-tracker-v1";
+const MOTIVATION_KEY = "weiguang-habit-motivation-last";
+
+const CLOUD_CONFIG_KEY = "weiguang-cloud-config-v1";
+const CLOUD_SESSION_KEY = "weiguang-cloud-session-v1";
+const EMBEDDED_CLOUD_CONFIG = {
+  supabaseUrl: "",
+  supabaseAnonKey: ""
+};
+const EMOJIS = ["🏃", "📚", "🧘", "💧", "🌙", "🥗", "💪", "✍️", "🧠", "🚶", "💻", "🌱", "☀️", "🎯", "🎸", "🫶"];
+const COLORS = [
+  { name: "鼠尾草", value: "#7f9f61" },
+  { name: "暖杏", value: "#e1a05c" },
+  { name: "雾蓝", value: "#6f94b2" },
+  { name: "陶土", value: "#c67f72" },
+  { name: "丁香", value: "#a388b4" },
+  { name: "玫瑰", value: "#d58ca2" },
+  { name: "麦穗", value: "#c5a151" },
+  { name: "青绿", value: "#7aa9a0" }
+];
+
+const MOTIVATIONS = [
+  "不必一下子走很远，只要今天比昨天多走一步。",
+  "把想做的事，变成每天都会做的小事。",
+  "慢慢来，不是停下，而是让坚持走得更远。",
+  "真正改变生活的，往往是一个又一个微小的选择。",
+  "今天完成的一点点，会在未来连成一条路。",
+  "允许偶尔休息，但别忘了再次出发。",
+  "认真生活的证据，就藏在每一次小小的坚持里。"
+];
+
+const WEEKDAY_LONG = new Intl.DateTimeFormat("zh-CN", { weekday: "long" });
+
+const elements = {
+  motivationText: document.getElementById("motivationText"),
+  manageHabitsButton: document.getElementById("manageHabitsButton"),
+  cloudButton: document.getElementById("cloudButton"),
+  cloudButtonLabel: document.getElementById("cloudButtonLabel"),
+  cloudStatusDot: document.getElementById("cloudStatusDot"),
+  cloudDialog: document.getElementById("cloudDialog"),
+  closeCloudButton: document.getElementById("closeCloudButton"),
+  cloudSetupView: document.getElementById("cloudSetupView"),
+  cloudUrl: document.getElementById("cloudUrl"),
+  cloudAnonKey: document.getElementById("cloudAnonKey"),
+  cloudSetupError: document.getElementById("cloudSetupError"),
+  saveCloudConfigButton: document.getElementById("saveCloudConfigButton"),
+  cloudAuthView: document.getElementById("cloudAuthView"),
+  cloudAuthForm: document.getElementById("cloudAuthForm"),
+  cloudEmail: document.getElementById("cloudEmail"),
+  cloudPassword: document.getElementById("cloudPassword"),
+  cloudAuthError: document.getElementById("cloudAuthError"),
+  cloudLoginButton: document.getElementById("cloudLoginButton"),
+  cloudRegisterButton: document.getElementById("cloudRegisterButton"),
+  editCloudConfigButton: document.getElementById("editCloudConfigButton"),
+  cloudAccountView: document.getElementById("cloudAccountView"),
+  cloudUserEmail: document.getElementById("cloudUserEmail"),
+  cloudStatusDotLarge: document.getElementById("cloudStatusDotLarge"),
+  cloudStatusText: document.getElementById("cloudStatusText"),
+  cloudLastSync: document.getElementById("cloudLastSync"),
+  cloudSyncNowButton: document.getElementById("cloudSyncNowButton"),
+  cloudUploadLocalButton: document.getElementById("cloudUploadLocalButton"),
+  changeCloudConfigButton: document.getElementById("changeCloudConfigButton"),
+  cloudSignOutButton: document.getElementById("cloudSignOutButton"),  shareButton: document.getElementById("shareButton"),
+  calendarTitle: document.getElementById("calendarTitle"),
+  calendarGrid: document.getElementById("calendarGrid"),
+  monthCheckinDays: document.getElementById("monthCheckinDays"),
+  monthCheckinLabel: document.getElementById("monthCheckinLabel"),
+  currentMonth: document.getElementById("currentMonth"),
+  previousMonth: document.getElementById("previousMonth"),
+  nextMonth: document.getElementById("nextMonth"),
+  selectedDayKicker: document.getElementById("selectedDayKicker"),
+  selectedDateTitle: document.getElementById("selectedDateTitle"),
+  selectedWeekday: document.getElementById("selectedWeekday"),
+  goTodayButton: document.getElementById("goTodayButton"),
+  selectedCompleted: document.getElementById("selectedCompleted"),
+  selectedTotal: document.getElementById("selectedTotal"),
+  selectedProgressBar: document.getElementById("selectedProgressBar"),
+  selectedStatusText: document.getElementById("selectedStatusText"),
+  selectedHabits: document.getElementById("selectedHabits"),
+  selectedEmpty: document.getElementById("selectedEmpty"),
+  inlineAddButton: document.getElementById("inlineAddButton"),
+  managerDialog: document.getElementById("managerDialog"),
+  closeManagerButton: document.getElementById("closeManagerButton"),
+  managedHabits: document.getElementById("managedHabits"),
+  managerEmpty: document.getElementById("managerEmpty"),
+  globalHabitCount: document.getElementById("globalHabitCount"),
+  addGlobalHabitButton: document.getElementById("addGlobalHabitButton"),
+  habitDialog: document.getElementById("habitDialog"),
+  habitForm: document.getElementById("habitForm"),
+  habitName: document.getElementById("habitName"),
+  nameError: document.getElementById("nameError"),
+  emojiOptions: document.getElementById("emojiOptions"),
+  colorOptions: document.getElementById("colorOptions"),
+  dialogKicker: document.getElementById("dialogKicker"),
+  dialogTitle: document.getElementById("dialogTitle"),
+  dialogScope: document.getElementById("dialogScope"),
+  saveHabitButton: document.getElementById("saveHabitButton"),
+  closeDialogButton: document.getElementById("closeDialogButton"),
+  cancelDialogButton: document.getElementById("cancelDialogButton"),
+  toast: document.getElementById("toast")
+};
+
+const pad = (value) => String(value).padStart(2, "0");
+
+let data = loadData();
+let visibleMonth = monthStart(parseDate(todayISO()));
+let selectedDateISO = todayISO();
+let toastTimer = null;
+let managerDeleteArmId = null;
+let managerDeleteTimer = null;
+let habitDialogScope = "day";
+let habitDialogDateISO = null;
+let editingHabitId = null;
+let reopenManagerAfterSave = false;
+let lastRenderedDay = todayISO();
+let cloudConfig = loadCloudConfig();
+let cloudSession = loadCloudSession();
+let cloudStatus = cloudConfig ? (cloudSession ? "synced" : "configured") : "local";
+let cloudUpdatedAt = null;
+let localChangeVersion = 0;
+let cloudLastSyncAt = null;
+let cloudDirty = false;
+let cloudSaveTimer = null;
+let cloudSyncing = false;
+let cloudPollTimer = null;
+
+function toISO(date) {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+function todayISO() {
+  return toISO(new Date());
+}
+
+function parseDate(iso) {
+  const [year, month, day] = iso.split("-").map(Number);
+  return new Date(year, month - 1, day, 12);
+}
+
+function monthStart(date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1, 12);
+}
+
+function addDays(date, amount) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + amount);
+  return next;
+}
+
+function addMonths(date, amount) {
+  return new Date(date.getFullYear(), date.getMonth() + amount, 1, 12);
+}
+
+function sameMonth(first, second) {
+  return first.getFullYear() === second.getFullYear() && first.getMonth() === second.getMonth();
+}
+
+function makeId() {
+  if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
+    return globalThis.crypto.randomUUID();
+  }
+  return `habit-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function escapeHTML(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function normalizeHabit(habit, fallbackIndex = 0) {
+  if (!habit || typeof habit.name !== "string") return null;
+  return {
+    id: typeof habit.id === "string" ? habit.id : `habit-${Date.now()}-${fallbackIndex}`,
+    name: habit.name.slice(0, 20),
+    emoji: EMOJIS.includes(habit.emoji) ? habit.emoji : "🌱",
+    color: COLORS.some((color) => color.value === habit.color) ? habit.color : COLORS[0].value
+  };
+}
+
+function normalizeDateHabitMap(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return Object.fromEntries(
+    Object.entries(value).map(([dateISO, habits]) => [
+      dateISO,
+      Array.isArray(habits) ? habits.map(normalizeHabit).filter(Boolean) : []
+    ])
+  );
+}
+
+function normalizeHiddenMap(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return Object.fromEntries(
+    Object.entries(value).map(([dateISO, ids]) => [
+      dateISO,
+      Array.isArray(ids) ? [...new Set(ids.filter((id) => typeof id === "string"))] : []
+    ])
+  );
+}
+
+function normalizeOrderMap(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return Object.fromEntries(
+    Object.entries(value).map(([dateISO, ids]) => [
+      dateISO,
+      Array.isArray(ids) ? [...new Set(ids.filter((id) => typeof id === "string"))] : []
+    ])
+  );
+}
+function loadCloudConfig() {
+  const embeddedUrl = String(EMBEDDED_CLOUD_CONFIG.supabaseUrl || "").trim().replace(/\/+$/, "");
+  const embeddedKey = String(EMBEDDED_CLOUD_CONFIG.supabaseAnonKey || "").trim();
+  if (embeddedUrl && embeddedKey) return { supabaseUrl: embeddedUrl, supabaseAnonKey: embeddedKey };
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(CLOUD_CONFIG_KEY) || "null");
+    if (saved && typeof saved.supabaseUrl === "string" && typeof saved.supabaseAnonKey === "string") {
+      return {
+        supabaseUrl: saved.supabaseUrl.trim().replace(/\/+$/, ""),
+        supabaseAnonKey: saved.supabaseAnonKey.trim()
+      };
+    }
+  } catch (error) {
+    // Cloud sync stays disabled when local configuration is unavailable.
+  }
+  return null;
+}
+
+function persistCloudConfig(config) {
+  cloudConfig = config;
+  try {
+    localStorage.setItem(CLOUD_CONFIG_KEY, JSON.stringify(config));
+  } catch (error) {
+    // The current session can still use the configuration.
+  }
+}
+
+function loadCloudSession() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CLOUD_SESSION_KEY) || "null");
+    if (saved && typeof saved.access_token === "string" && saved.user && typeof saved.user.id === "string") return saved;
+  } catch (error) {
+    // Invalid sessions are treated as signed out.
+  }
+  return null;
+}
+
+function persistCloudSession(session) {
+  cloudSession = session;
+  try {
+    if (session) localStorage.setItem(CLOUD_SESSION_KEY, JSON.stringify(session));
+    else localStorage.removeItem(CLOUD_SESSION_KEY);
+  } catch (error) {
+    // Session persistence is optional for the current page session.
+  }
+}
+function createDefaultData() {
+  return {
+    version: 2,
+    habits: [
+      { id: "starter-move", name: "运动 20 分钟", emoji: "💪", color: "#7f9f61" },
+      { id: "starter-learn", name: "专注学习 30 分钟", emoji: "📚", color: "#e1a05c" },
+      { id: "starter-sleep", name: "23:00 前入睡", emoji: "🌙", color: "#6f94b2" }
+    ],
+    dayHabits: {},
+    hiddenHabits: {},
+    dayOrder: {},
+    records: {}
+  };
+}
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) {
+      const initial = createDefaultData();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+      return initial;
+    }
+
+    const parsed = JSON.parse(saved);
+    if (!parsed || !Array.isArray(parsed.habits) || !parsed.records || typeof parsed.records !== "object") {
+      throw new Error("Invalid habit data");
+    }
+
+    return {
+      version: 2,
+      habits: parsed.habits.map(normalizeHabit).filter(Boolean),
+      dayHabits: normalizeDateHabitMap(parsed.dayHabits),
+      hiddenHabits: normalizeHiddenMap(parsed.hiddenHabits),
+      dayOrder: normalizeOrderMap(parsed.dayOrder),
+      records: parsed.records
+    };
+  } catch (error) {
+    const initial = createDefaultData();
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+    } catch (storageError) {
+      // The page remains usable for the current session when storage is unavailable.
+    }
+    return initial;
+  }
+}
+
+function saveData(syncCloud = true) {
+  let localSaved = true;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (error) {
+    localSaved = false;
+    showToast("浏览器暂时无法保存本地数据，请检查隐私设置。");
+  }
+  if (syncCloud) {
+    localChangeVersion += 1;
+    scheduleCloudSave();
+  }
+  return localSaved;
+}
+
+function isHabitChecked(dateISO, habitId) {
+  return Boolean(data.records[dateISO] && data.records[dateISO][habitId]);
+}
+
+function getDayHabits(dateISO) {
+  return data.dayHabits[dateISO] || [];
+}
+
+function getActiveHabits(dateISO) {
+  const hidden = new Set(data.hiddenHabits[dateISO] || []);
+  const globalHabits = data.habits.filter((habit) => !hidden.has(habit.id));
+  const baseHabits = [...globalHabits, ...getDayHabits(dateISO)];
+  const order = data.dayOrder[dateISO] || [];
+  if (order.length === 0) return baseHabits;
+
+  const byId = new Map(baseHabits.map((habit) => [habit.id, habit]));
+  const ordered = order.map((id) => byId.get(id)).filter(Boolean);
+  const orderedIds = new Set(ordered.map((habit) => habit.id));
+  return [...ordered, ...baseHabits.filter((habit) => !orderedIds.has(habit.id))];
+}
+
+function getCompletedHabits(dateISO) {
+  return getActiveHabits(dateISO).filter((habit) => isHabitChecked(dateISO, habit.id));
+}
+
+function getMonthStats(date) {
+  const today = parseDate(todayISO());
+  const monthIsCurrent = sameMonth(date, today);
+  const monthIsFuture = monthStart(date) > monthStart(today);
+  const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  const lastDay = monthIsCurrent ? today.getDate() : (monthIsFuture ? 0 : daysInMonth);
+  let checkinDays = 0;
+  let completedChecks = 0;
+  let possibleChecks = 0;
+
+  for (let day = 1; day <= lastDay; day += 1) {
+    const dateISO = toISO(new Date(date.getFullYear(), date.getMonth(), day, 12));
+    const activeHabits = getActiveHabits(dateISO);
+    const completed = activeHabits.filter((habit) => isHabitChecked(dateISO, habit.id)).length;
+    completedChecks += completed;
+    possibleChecks += activeHabits.length;
+    if (completed > 0) checkinDays += 1;
+  }
+
+  return {
+    checkinDays,
+    rate: possibleChecks > 0 ? Math.round((completedChecks / possibleChecks) * 100) : 0
+  };
+}
+
+function getGlobalStreak() {
+  let cursor = parseDate(todayISO());
+  if (getCompletedHabits(toISO(cursor)).length === 0) cursor = addDays(cursor, -1);
+
+  let streak = 0;
+  for (let index = 0; index < 3660; index += 1) {
+    const dateISO = toISO(cursor);
+    const activeHabits = getActiveHabits(dateISO);
+    const completed = activeHabits.filter((habit) => isHabitChecked(dateISO, habit.id)).length;
+    if (activeHabits.length === 0 || completed === 0) break;
+    streak += 1;
+    cursor = addDays(cursor, -1);
+  }
+  return streak;
+}
+
+function renderChip(habit) {
+  return `
+    <span class="habit-chip" style="--habit-color: ${escapeHTML(habit.color)}" title="${escapeHTML(habit.name)}">
+      <span class="habit-chip-emoji" aria-hidden="true">${escapeHTML(habit.emoji)}</span>
+      <span class="habit-chip-text">${escapeHTML(habit.name)}</span>
+    </span>
+  `;
+}
+
+function renderCalendar() {
+  const today = todayISO();
+  const year = visibleMonth.getFullYear();
+  const month = visibleMonth.getMonth();
+  const isCurrentMonth = sameMonth(visibleMonth, parseDate(today));
+  const firstOfMonth = new Date(year, month, 1, 12);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstWeekday = (firstOfMonth.getDay() + 6) % 7;
+  const stats = getMonthStats(visibleMonth);
+
+  elements.calendarTitle.textContent = `${year}年${month + 1}月`;
+  elements.monthCheckinDays.textContent = String(stats.checkinDays);
+  elements.monthCheckinLabel.textContent = isCurrentMonth ? "本月打卡" : `${month + 1}月打卡`;
+  elements.currentMonth.textContent = isCurrentMonth ? "今天" : "回到本月";
+  elements.calendarGrid.innerHTML = "";
+
+  for (let index = 0; index < firstWeekday; index += 1) {
+    const empty = document.createElement("div");
+    empty.className = "calendar-day is-empty";
+    empty.setAttribute("aria-hidden", "true");
+    elements.calendarGrid.appendChild(empty);
+  }
+
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const date = new Date(year, month, day, 12);
+    const dateISO = toISO(date);
+    const activeHabits = getActiveHabits(dateISO);
+    const completedHabits = activeHabits.filter((habit) => isHabitChecked(dateISO, habit.id));
+    const isFuture = dateISO > today;
+    const isToday = dateISO === today;
+    const isSelected = dateISO === selectedDateISO;
+    const hasCheckin = completedHabits.length > 0;
+    const cell = document.createElement("button");
+
+    cell.type = "button";
+    cell.className = `calendar-day${isFuture ? " is-future" : ""}${isToday ? " is-today" : ""}${isSelected ? " is-selected" : ""}${hasCheckin ? " is-complete" : ""}`;
+    cell.dataset.date = dateISO;
+    cell.setAttribute("role", "gridcell");
+    cell.setAttribute("aria-selected", String(isSelected));
+
+    const statusText = isFuture
+      ? "未来日期"
+      : activeHabits.length === 0
+        ? "没有习惯记录"
+        : `完成 ${completedHabits.length} 个，共 ${activeHabits.length} 个习惯`;
+    cell.setAttribute("aria-label", `${month + 1}月${day}日，${statusText}`);
+    cell.title = `${month + 1}月${day}日 · ${statusText}`;
+
+    let habitsHTML = "";
+    if (isFuture) {
+      habitsHTML = "";
+    } else if (completedHabits.length > 0) {
+      habitsHTML = completedHabits.slice(0, 3).map(renderChip).join("");
+      if (completedHabits.length > 3) {
+        habitsHTML += `<span class="habit-chip-more">+${completedHabits.length - 3} 项</span>`;
+      }
+    } else {
+      habitsHTML = `<span class="no-check">${activeHabits.length > 0 ? "未打卡" : "—"}</span>`;
+    }
+
+    cell.innerHTML = `
+      <span class="day-cell-head">
+        <span class="day-number">${day}</span>
+        ${isToday ? '<span class="day-badge">今天</span>' : ""}
+      </span>
+      <span class="day-habits">${habitsHTML}</span>
+    `;
+    elements.calendarGrid.appendChild(cell);
+  }
+
+  const trailingEmpty = (7 - ((firstWeekday + daysInMonth) % 7)) % 7;
+  for (let index = 0; index < trailingEmpty; index += 1) {
+    const empty = document.createElement("div");
+    empty.className = "calendar-day is-empty";
+    empty.setAttribute("aria-hidden", "true");
+    elements.calendarGrid.appendChild(empty);
+  }
+}
+function relationLabel(dateISO) {
+  const today = todayISO();
+  if (dateISO === today) return "今天";
+  return dateISO > today ? "未来" : "过去";
+}
+
+function renderSelectedDay() {
+  const date = parseDate(selectedDateISO);
+  const today = todayISO();
+  const isToday = selectedDateISO === today;
+  const isFuture = selectedDateISO > today;
+  const activeHabits = getActiveHabits(selectedDateISO);
+  const dayHabitIds = new Set(getDayHabits(selectedDateISO).map((habit) => habit.id));
+  const completedHabits = activeHabits.filter((habit) => isHabitChecked(selectedDateISO, habit.id));
+  const total = activeHabits.length;
+  const completed = completedHabits.length;
+  const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+  elements.selectedDayKicker.textContent = isToday ? "TODAY'S CHECKLIST" : (isFuture ? "UPCOMING DAY" : "HISTORY");
+  elements.selectedDateTitle.textContent = `${date.getMonth() + 1}月${date.getDate()}日`;
+  elements.selectedWeekday.textContent = `${WEEKDAY_LONG.format(date)} · ${relationLabel(selectedDateISO)}`;
+  elements.goTodayButton.hidden = isToday;
+  elements.selectedCompleted.textContent = String(completed);
+  elements.selectedTotal.textContent = String(total);
+  elements.selectedProgressBar.style.width = `${percent}%`;
+  elements.selectedHabits.innerHTML = "";
+  elements.selectedHabits.hidden = total === 0;
+  elements.selectedEmpty.hidden = total !== 0;
+
+  if (total === 0) {
+    elements.selectedStatusText.textContent = isFuture ? "这一天还没有安排习惯。" : "这一天没有习惯记录。";
+  } else if (isFuture) {
+    elements.selectedStatusText.textContent = `这一天有 ${total} 个习惯等待完成。`;
+  } else if (completed === total) {
+    elements.selectedStatusText.textContent = isToday ? "今天的习惯全部完成，做得很好。" : "这一天的习惯全部完成。";
+  } else if (completed === 0) {
+    elements.selectedStatusText.textContent = isToday ? "从第一个小勾开始。" : "这一天还没有打卡记录，可以补打卡。";
+  } else {
+    elements.selectedStatusText.textContent = `已完成 ${completed} 项，还有 ${total - completed} 项待打卡。`;
+  }
+
+  activeHabits.forEach((habit) => {
+    const checked = isHabitChecked(selectedDateISO, habit.id);
+    const isDayOnly = dayHabitIds.has(habit.id);
+    const row = document.createElement("div");
+    row.className = `detail-habit${checked ? " is-completed" : ""}${isFuture ? " is-future" : ""}`;
+    row.dataset.habitId = habit.id;
+    row.style.setProperty("--habit-color", habit.color);
+
+    const status = checked ? "已完成" : (isFuture ? "待开始" : "待打卡");
+    const meta = isDayOnly ? `${status} · 当天专属` : status;
+    row.innerHTML = `
+      <button class="drag-handle" type="button" draggable="true" data-drag-handle aria-label="拖动排序：${escapeHTML(habit.name)}" title="拖动调整顺序">
+        <svg viewBox="0 0 18 24" aria-hidden="true"><circle cx="6" cy="6" r="1.4" fill="currentColor"/><circle cx="12" cy="6" r="1.4" fill="currentColor"/><circle cx="6" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="6" cy="18" r="1.4" fill="currentColor"/><circle cx="12" cy="18" r="1.4" fill="currentColor"/></svg>
+      </button>
+      <button class="detail-check" type="button" data-action="toggle" aria-pressed="${checked}" aria-label="${checked ? "取消完成" : "标记完成"}：${escapeHTML(habit.name)}" ${isFuture ? "disabled" : ""}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.3 4.3L19 6.8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <span class="detail-avatar" aria-hidden="true">${escapeHTML(habit.emoji)}</span>
+      <span class="detail-info">
+        <span class="detail-name">${escapeHTML(habit.name)}</span>
+        <span class="detail-meta">${meta}</span>
+      </span>
+      <button class="detail-edit" type="button" data-action="edit-day" aria-label="编辑当天习惯：${escapeHTML(habit.name)}" title="编辑这个习惯">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10-10-4-4L4 16v4Zm9-13 4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="detail-remove" type="button" data-action="remove-day" aria-label="从当天移除习惯：${escapeHTML(habit.name)}" title="从当天移除，不影响其他日期">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2m-8 0 1 13h8l1-13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    `;
+    elements.selectedHabits.appendChild(row);
+  });
+}
+
+function renderAll() {
+  renderCalendar();
+  renderSelectedDay();
+}
+
+function setMotivation() {
+  let lastIndex = -1;
+  try {
+    const saved = Number(localStorage.getItem(MOTIVATION_KEY));
+    if (Number.isInteger(saved)) lastIndex = saved;
+  } catch (error) {
+    // Random selection still works when storage is unavailable.
+  }
+
+  let nextIndex = Math.floor(Math.random() * MOTIVATIONS.length);
+  if (MOTIVATIONS.length > 1 && nextIndex === lastIndex) {
+    nextIndex = (nextIndex + 1 + Math.floor(Math.random() * (MOTIVATIONS.length - 1))) % MOTIVATIONS.length;
+  }
+  elements.motivationText.textContent = MOTIVATIONS[nextIndex];
+
+  try {
+    localStorage.setItem(MOTIVATION_KEY, String(nextIndex));
+  } catch (error) {
+    // The quote still rotates on reload when storage is available.
+  }
+}
+
+function renderManagedHabits() {
+  elements.globalHabitCount.textContent = String(data.habits.length);
+  elements.managerEmpty.hidden = data.habits.length > 0;
+  elements.managedHabits.innerHTML = data.habits.map((habit) => {
+    const armed = managerDeleteArmId === habit.id;
+    return `
+      <div class="managed-habit" data-habit-id="${escapeHTML(habit.id)}" style="--habit-color: ${escapeHTML(habit.color)}">
+        <button class="drag-handle" type="button" draggable="true" data-drag-handle aria-label="拖动排序：${escapeHTML(habit.name)}" title="拖动调整顺序">
+          <svg viewBox="0 0 18 24" aria-hidden="true"><circle cx="6" cy="6" r="1.4" fill="currentColor"/><circle cx="12" cy="6" r="1.4" fill="currentColor"/><circle cx="6" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="6" cy="18" r="1.4" fill="currentColor"/><circle cx="12" cy="18" r="1.4" fill="currentColor"/></svg>
+        </button>
+        <span class="managed-avatar" aria-hidden="true">${escapeHTML(habit.emoji)}</span>
+        <span class="managed-info">
+          <span class="managed-name">${escapeHTML(habit.name)}</span>
+          <span class="managed-scope">应用到所有日期</span>
+        </span>
+        <span class="managed-actions">
+          <button class="managed-edit" type="button" data-action="edit-global" data-habit-id="${escapeHTML(habit.id)}">编辑</button>
+          <button class="managed-delete${armed ? " is-armed" : ""}" type="button" data-action="delete-global" data-habit-id="${escapeHTML(habit.id)}">${armed ? "确认删除" : "删除"}</button>
+        </span>
+      </div>
+    `;
+  }).join("");
+}
+
+function openManagerDialog() {
+  managerDeleteArmId = null;
+  window.clearTimeout(managerDeleteTimer);
+  renderManagedHabits();
+  if (!elements.managerDialog.open) elements.managerDialog.showModal();
+}
+
+function closeManagerDialog() {
+  if (elements.managerDialog.open) elements.managerDialog.close();
+}
+
+function resetManagerDelete() {
+  managerDeleteArmId = null;
+  window.clearTimeout(managerDeleteTimer);
+}
+
+function deleteGlobalHabit(habitId) {
+  const habit = data.habits.find((item) => item.id === habitId);
+  if (!habit) return;
+  data.habits = data.habits.filter((item) => item.id !== habitId);
+
+  Object.keys(data.hiddenHabits).forEach((dateISO) => {
+    data.hiddenHabits[dateISO] = data.hiddenHabits[dateISO].filter((id) => id !== habitId);
+    if (data.hiddenHabits[dateISO].length === 0) delete data.hiddenHabits[dateISO];
+  });
+
+  Object.keys(data.records).forEach((dateISO) => {
+    if (data.records[dateISO] && data.records[dateISO][habitId]) {
+      delete data.records[dateISO][habitId];
+      if (Object.keys(data.records[dateISO]).length === 0) delete data.records[dateISO];
+    }
+  });
+
+  Object.keys(data.dayOrder).forEach((dateISO) => {
+    data.dayOrder[dateISO] = data.dayOrder[dateISO].filter((id) => id !== habitId);
+    if (data.dayOrder[dateISO].length === 0) delete data.dayOrder[dateISO];
+  });
+  resetManagerDelete();
+  saveData();
+  renderAll();
+  renderManagedHabits();
+  showToast(`已删除全局习惯：${habit.name}`);
+}
+
+function removeHabitFromDay(habitId) {
+  const habit = getActiveHabits(selectedDateISO).find((item) => item.id === habitId);
+  if (!habit) return;
+
+  const dayHabits = getDayHabits(selectedDateISO);
+  const dayHabitIndex = dayHabits.findIndex((item) => item.id === habitId);
+  if (dayHabitIndex >= 0) {
+    dayHabits.splice(dayHabitIndex, 1);
+    if (dayHabits.length === 0) delete data.dayHabits[selectedDateISO];
+  } else {
+    if (!data.hiddenHabits[selectedDateISO]) data.hiddenHabits[selectedDateISO] = [];
+    if (!data.hiddenHabits[selectedDateISO].includes(habitId)) data.hiddenHabits[selectedDateISO].push(habitId);
+  }
+
+  if (data.dayOrder[selectedDateISO]) {
+    data.dayOrder[selectedDateISO] = data.dayOrder[selectedDateISO].filter((id) => id !== habitId);
+    if (data.dayOrder[selectedDateISO].length === 0) delete data.dayOrder[selectedDateISO];
+  }
+  if (data.records[selectedDateISO]) {
+    delete data.records[selectedDateISO][habitId];
+    if (Object.keys(data.records[selectedDateISO]).length === 0) delete data.records[selectedDateISO];
+  }
+
+  saveData();
+  renderAll();
+  const date = parseDate(selectedDateISO);
+  showToast(`已从 ${date.getMonth() + 1}月${date.getDate()}日 移除：${habit.name}`);
+}
+
+function toggleHabit(habitId, sourceButton) {
+  if (selectedDateISO > todayISO()) return;
+  const wasFocused = document.activeElement === sourceButton;
+  if (!data.records[selectedDateISO]) data.records[selectedDateISO] = {};
+
+  if (isHabitChecked(selectedDateISO, habitId)) {
+    delete data.records[selectedDateISO][habitId];
+    if (Object.keys(data.records[selectedDateISO]).length === 0) delete data.records[selectedDateISO];
+  } else {
+    data.records[selectedDateISO][habitId] = true;
+  }
+
+  saveData();
+  renderAll();
+
+  if (wasFocused) {
+    const nextButton = elements.selectedHabits.querySelector(`[data-habit-id="${CSS.escape(habitId)}"] [data-action="toggle"]`);
+    if (nextButton) nextButton.focus();
+  }
+
+  const habit = data.habits.find((item) => item.id === habitId) || getDayHabits(selectedDateISO).find((item) => item.id === habitId);
+  if (!habit) return;
+
+  if (isHabitChecked(selectedDateISO, habitId)) {
+    const activeHabits = getActiveHabits(selectedDateISO);
+    const completed = activeHabits.filter((item) => isHabitChecked(selectedDateISO, item.id)).length;
+    if (selectedDateISO === todayISO()) {
+      showToast(completed === activeHabits.length ? "今天的习惯全部完成，真棒！" : `已打卡：${habit.name}`);
+    } else {
+      showToast(completed === activeHabits.length ? "这一天已全部完成。" : `已补打卡：${habit.name}`);
+    }
+  } else {
+    showToast(`已取消：${habit.name}`);
+  }
+}
+
+function buildChoiceOptions() {
+  EMOJIS.forEach((emoji, index) => {
+    const label = document.createElement("label");
+    label.className = "emoji-option";
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = "habitEmoji";
+    input.value = emoji;
+    input.checked = index === 0;
+    input.setAttribute("aria-label", emoji);
+    const visual = document.createElement("span");
+    visual.textContent = emoji;
+    visual.setAttribute("aria-hidden", "true");
+    label.append(input, visual);
+    elements.emojiOptions.appendChild(label);
+  });
+
+  COLORS.forEach((color, index) => {
+    const label = document.createElement("label");
+    label.className = "color-option";
+    label.title = color.name;
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = "habitColor";
+    input.value = color.value;
+    input.checked = index === 0;
+    input.setAttribute("aria-label", color.name);
+    const visual = document.createElement("span");
+    visual.style.setProperty("--swatch", color.value);
+    visual.setAttribute("aria-hidden", "true");
+    label.append(input, visual);
+    elements.colorOptions.appendChild(label);
+  });
+}
+
+function openHabitDialog(scope, dateISO = selectedDateISO, returnToManager = false, habitToEdit = null) {
+  habitDialogScope = scope;
+  habitDialogDateISO = dateISO;
+  reopenManagerAfterSave = returnToManager;
+  editingHabitId = habitToEdit?.id || null;
+  elements.habitForm.reset();
+  elements.habitName.classList.remove("is-invalid");
+  elements.nameError.textContent = "";
+
+  if (scope === "global") {
+    elements.dialogKicker.textContent = editingHabitId ? "EDIT GLOBAL HABIT" : "GLOBAL HABIT";
+    elements.dialogTitle.textContent = editingHabitId ? "编辑全局习惯" : "添加全局习惯";
+    elements.saveHabitButton.textContent = editingHabitId ? "保存修改" : "添加全局习惯";
+    elements.dialogScope.textContent = editingHabitId
+      ? "修改会应用到所有日期，原有打卡记录会保留。"
+      : "这个习惯会应用到所有日期。";
+  } else {
+    const date = parseDate(dateISO);
+    elements.dialogKicker.textContent = editingHabitId ? "EDIT DAY HABIT" : "ONE-DAY HABIT";
+    elements.dialogTitle.textContent = editingHabitId ? "编辑当天习惯" : "添加当天习惯";
+    elements.saveHabitButton.textContent = editingHabitId ? "保存修改" : "添加当天习惯";
+    elements.dialogScope.textContent = editingHabitId
+      ? `仅修改 ${date.getMonth() + 1}月${date.getDate()}日的这个习惯，原有打卡记录会保留。`
+      : `仅添加到 ${date.getMonth() + 1}月${date.getDate()}日，不影响其他日期。`;
+  }
+
+  if (habitToEdit) {
+    elements.habitName.value = habitToEdit.name;
+    const emojiInput = Array.from(elements.emojiOptions.querySelectorAll('input[name="habitEmoji"]')).find((input) => input.value === habitToEdit.emoji);
+    const colorInput = Array.from(elements.colorOptions.querySelectorAll('input[name="habitColor"]')).find((input) => input.value === habitToEdit.color);
+    if (emojiInput) emojiInput.checked = true;
+    if (colorInput) colorInput.checked = true;
+  }
+
+  if (!elements.habitDialog.open) elements.habitDialog.showModal();
+  window.setTimeout(() => {
+    elements.habitName.focus();
+    elements.habitName.select();
+  }, 30);
+}
+
+function closeHabitDialog(restoreManager = false) {
+  const shouldRestoreManager = restoreManager || reopenManagerAfterSave;
+  reopenManagerAfterSave = false;
+  if (elements.habitDialog.open) elements.habitDialog.close();
+  if (shouldRestoreManager) window.setTimeout(openManagerDialog, 0);
+}
+
+function submitHabit(event) {
+  event.preventDefault();
+  const name = elements.habitName.value.trim().replace(/\s+/g, " ");
+  if (!name) {
+    elements.habitName.classList.add("is-invalid");
+    elements.nameError.textContent = "请先写下习惯名称。";
+    elements.habitName.focus();
+    return;
+  }
+
+  const targetDateISO = habitDialogScope === "global" ? null : habitDialogDateISO;
+  const existingHabits = habitDialogScope === "global" ? data.habits : getActiveHabits(targetDateISO);
+  const duplicate = existingHabits.some((habit) => habit.name === name && habit.id !== editingHabitId);
+  if (duplicate) {
+    elements.habitName.classList.add("is-invalid");
+    elements.nameError.textContent = "这里已经有同名习惯了。";
+    elements.habitName.focus();
+    return;
+  }
+
+  const emoji = elements.habitForm.querySelector('input[name="habitEmoji"]:checked')?.value || EMOJIS[0];
+  const color = elements.habitForm.querySelector('input[name="habitColor"]:checked')?.value || COLORS[0].value;
+
+  if (editingHabitId) {
+    const targetHabit = habitDialogScope === "global"
+      ? data.habits.find((habit) => habit.id === editingHabitId)
+      : getDayHabits(targetDateISO).find((habit) => habit.id === editingHabitId);
+
+    if (targetHabit) {
+      targetHabit.name = name;
+      targetHabit.emoji = emoji;
+      targetHabit.color = color;
+      saveData();
+      const restoreManager = habitDialogScope === "global" && reopenManagerAfterSave;
+      closeHabitDialog(restoreManager);
+      renderAll();
+      showToast("习惯已更新，原有打卡记录已保留。");
+    }
+    return;
+  }
+
+  const habit = { id: makeId(), name, emoji, color };
+  if (habitDialogScope === "global") {
+    data.habits.push(habit);
+    saveData();
+    closeHabitDialog(true);
+    renderAll();
+    showToast("全局习惯已添加，将显示在所有日期。");
+    return;
+  }
+
+  if (!data.dayHabits[targetDateISO]) data.dayHabits[targetDateISO] = [];
+  data.dayHabits[targetDateISO].push(habit);
+  saveData();
+  closeHabitDialog(false);
+  renderAll();
+  const date = parseDate(targetDateISO);
+  showToast(`已添加到 ${date.getMonth() + 1}月${date.getDate()}日。`);
+}
+function showToast(message) {
+  window.clearTimeout(toastTimer);
+  elements.toast.textContent = message;
+  elements.toast.classList.add("is-visible");
+  toastTimer = window.setTimeout(() => {
+    elements.toast.classList.remove("is-visible");
+  }, 2300);
+}
+
+function selectDate(dateISO) {
+  const date = parseDate(dateISO);
+  if (!sameMonth(date, visibleMonth)) visibleMonth = monthStart(date);
+  selectedDateISO = dateISO;
+  renderAll();
+}
+
+function drawRoundedRect(ctx, x, y, width, height, radius) {
+  const r = Math.min(radius, width / 2, height / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + width, y, x + width, y + height, r);
+  ctx.arcTo(x + width, y + height, x, y + height, r);
+  ctx.arcTo(x, y + height, x, y, r);
+  ctx.arcTo(x, y, x + width, y, r);
+  ctx.closePath();
+}
+
+function truncateCanvasText(ctx, text, maxWidth) {
+  if (ctx.measureText(text).width <= maxWidth) return text;
+  let shortened = text;
+  while (shortened.length > 1 && ctx.measureText(`${shortened}…`).width > maxWidth) {
+    shortened = shortened.slice(0, -1);
+  }
+  return `${shortened}…`;
+}
+
+function wrapCanvasText(ctx, text, maxWidth, maxLines = 2) {
+  const lines = [];
+  let current = "";
+  for (const character of text) {
+    const candidate = current + character;
+    if (ctx.measureText(candidate).width > maxWidth && current) {
+      lines.push(current);
+      current = character;
+      if (lines.length === maxLines - 1) break;
+    } else {
+      current = candidate;
+    }
+  }
+  if (current && lines.length < maxLines) {
+    const consumed = lines.join("").length;
+    const remaining = text.slice(consumed);
+    lines.push(truncateCanvasText(ctx, remaining, maxWidth));
+  }
+  return lines.length > 0 ? lines : [text];
+}
+
+function drawShareBackground(ctx, width, height) {
+  const gradient = ctx.createLinearGradient(0, 0, 0, height);
+  gradient.addColorStop(0, "#f8f6ef");
+  gradient.addColorStop(1, "#efede5");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.save();
+  ctx.globalAlpha = 0.43;
+  ctx.fillStyle = "#dce8c4";
+  ctx.beginPath();
+  ctx.arc(55, 8, 160, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 0.28;
+  ctx.fillStyle = "#efdcc1";
+  ctx.beginPath();
+  ctx.arc(width - 20, height * 0.38, 135, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawShareLegend(ctx, x, y) {
+  ctx.save();
+  ctx.font = '9px "Microsoft YaHei UI", "PingFang SC", sans-serif';
+  ctx.textBaseline = "middle";
+
+  ctx.fillStyle = "#718f43";
+  drawRoundedRect(ctx, x, y - 4, 8, 8, 2);
+  ctx.fill();
+  ctx.fillStyle = "#6c7871";
+  ctx.fillText("已完成", x + 13, y);
+
+  const secondX = x + 66;
+  ctx.strokeStyle = "#aeb7b1";
+  ctx.lineWidth = 1;
+  drawRoundedRect(ctx, secondX, y - 4, 8, 8, 2);
+  ctx.stroke();
+  ctx.fillStyle = "#6c7871";
+  ctx.fillText("待完成", secondX + 13, y);
+  ctx.restore();
+}
+
+function createCalendarShareCanvas() {
+  const year = visibleMonth.getFullYear();
+  const month = visibleMonth.getMonth();
+  const firstOfMonth = new Date(year, month, 1, 12);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstWeekday = (firstOfMonth.getDay() + 6) % 7;
+  const rows = Math.ceil((firstWeekday + daysInMonth) / 7);
+  const baseWidth = 900;
+  const cardX = 32;
+  const cardY = 106;
+  const cardWidth = 836;
+  const cardPadding = 28;
+  const headerHeight = 100;
+  const weekdaysHeight = 30;
+  const cellHeight = 94;
+  const gap = 8;
+  const contentWidth = cardWidth - cardPadding * 2;
+  const cellWidth = (contentWidth - gap * 6) / 7;
+  const gridTop = cardY + headerHeight + weekdaysHeight + 4;
+  const gridHeight = rows * cellHeight + Math.max(0, rows - 1) * gap;
+  const cardHeight = headerHeight + weekdaysHeight + 4 + gridHeight + 26;
+  const baseHeight = Math.ceil(cardY + cardHeight + 32);
+  const scale = 2;
+  const canvas = document.createElement("canvas");
+  canvas.width = baseWidth * scale;
+  canvas.height = baseHeight * scale;
+  const ctx = canvas.getContext("2d");
+  ctx.scale(scale, scale);
+  ctx.textBaseline = "alphabetic";
+
+  drawShareBackground(ctx, baseWidth, baseHeight);
+
+  ctx.save();
+  ctx.fillStyle = "#9ab26d";
+  ctx.font = '52px Georgia, serif';
+  ctx.fillText("“", 44, 70);
+  ctx.fillStyle = "#6a766f";
+  ctx.font = '8px "Microsoft YaHei UI", "PingFang SC", sans-serif';
+  ctx.fillText("今日小笺", 80, 38);
+  ctx.fillStyle = "#3d5149";
+  ctx.font = '17px "Microsoft YaHei UI", "PingFang SC", sans-serif';
+  const quoteLines = wrapCanvasText(ctx, elements.motivationText.textContent, 760, 2);
+  quoteLines.forEach((line, index) => ctx.fillText(line, 80, 61 + index * 25));
+  ctx.restore();
+
+  ctx.save();
+  ctx.shadowColor = "rgba(42, 58, 49, 0.11)";
+  ctx.shadowBlur = 28;
+  ctx.shadowOffsetY = 10;
+  ctx.fillStyle = "#fffdf8";
+  drawRoundedRect(ctx, cardX, cardY, cardWidth, cardHeight, 24);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.strokeStyle = "#d9d5c9";
+  ctx.lineWidth = 1;
+  drawRoundedRect(ctx, cardX + 0.5, cardY + 0.5, cardWidth - 1, cardHeight - 1, 24);
+  ctx.stroke();
+
+  const innerX = cardX + cardPadding;
+  const innerRight = cardX + cardWidth - cardPadding;
+
+  ctx.fillStyle = "#718f43";
+  ctx.font = '700 9px "Microsoft YaHei UI", "PingFang SC", sans-serif';
+  ctx.fillText("HABIT CALENDAR", innerX, cardY + 30);
+  ctx.fillStyle = "#20352e";
+  ctx.font = '700 30px "Microsoft YaHei UI", "PingFang SC", sans-serif';
+  ctx.fillText(`${year}年${month + 1}月`, innerX, cardY + 70);
+
+  const stats = getMonthStats(visibleMonth);
+  ctx.textAlign = "right";
+  ctx.fillStyle = "#69766f";
+  ctx.font = '9px "Microsoft YaHei UI", "PingFang SC", sans-serif';
+  ctx.fillText("本月打卡", innerRight, cardY + 35);
+  ctx.fillStyle = "#20352e";
+  ctx.font = '700 25px "Segoe UI", "Microsoft YaHei UI", sans-serif';
+  ctx.fillText(`${stats.checkinDays} 天`, innerRight, cardY + 68);
+  ctx.textAlign = "left";
+
+  ctx.strokeStyle = "#ddd8cc";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(innerX, cardY + 88);
+  ctx.lineTo(innerRight, cardY + 88);
+  ctx.stroke();
+
+  drawShareLegend(ctx, innerRight - 132, cardY + 101);
+
+  const weekdayNames = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+  ctx.fillStyle = "#6e7a73";
+  ctx.font = '9px "Microsoft YaHei UI", "PingFang SC", sans-serif';
+  ctx.textAlign = "center";
+  weekdayNames.forEach((label, index) => {
+    ctx.fillText(label, innerX + index * (cellWidth + gap) + cellWidth / 2, cardY + 123);
+  });
+  ctx.textAlign = "left";
+
+  for (let index = 0; index < rows * 7; index += 1) {
+    const row = Math.floor(index / 7);
+    const column = index % 7;
+    const day = index - firstWeekday + 1;
+    if (day < 1 || day > daysInMonth) continue;
+
+    const x = innerX + column * (cellWidth + gap);
+    const y = gridTop + row * (cellHeight + gap);
+    const currentDateISO = toISO(new Date(year, month, day, 12));
+    const activeHabits = getActiveHabits(currentDateISO);
+    const completedHabits = activeHabits.filter((habit) => isHabitChecked(currentDateISO, habit.id));
+    const isFuture = currentDateISO > todayISO();
+    const isToday = currentDateISO === todayISO();
+    const isSelected = currentDateISO === selectedDateISO;
+
+    ctx.fillStyle = completedHabits.length > 0 ? "#f5f8ed" : "#fcfbf7";
+    drawRoundedRect(ctx, x, y, cellWidth, cellHeight, 10);
+    ctx.fill();
+    ctx.strokeStyle = completedHabits.length > 0 ? "#cfdbc0" : "#d9d5ca";
+    ctx.lineWidth = 1;
+    drawRoundedRect(ctx, x + 0.5, y + 0.5, cellWidth - 1, cellHeight - 1, 10);
+    ctx.stroke();
+
+    if (isToday || isSelected) {
+      ctx.strokeStyle = "#1f3b32";
+      ctx.lineWidth = 1.6;
+      drawRoundedRect(ctx, x + 0.8, y + 0.8, cellWidth - 1.6, cellHeight - 1.6, 10);
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = isFuture ? "#7d8982" : "#41564d";
+    ctx.font = '700 12px "Segoe UI", "Microsoft YaHei UI", sans-serif';
+    ctx.fillText(String(day), x + 8, y + 18);
+
+    if (isToday) {
+      ctx.fillStyle = "#718f43";
+      drawRoundedRect(ctx, x + cellWidth - 34, y + 7, 27, 14, 4);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.font = '700 7px "Microsoft YaHei UI", "PingFang SC", sans-serif';
+      ctx.textAlign = "center";
+      ctx.fillText("今天", x + cellWidth - 20.5, y + 17);
+      ctx.textAlign = "left";
+    }
+
+    if (isFuture) continue;
+
+    if (completedHabits.length === 0) {
+      ctx.fillStyle = "#7a867f";
+      ctx.font = '8px "Microsoft YaHei UI", "PingFang SC", sans-serif';
+      ctx.fillText("未打卡", x + 8, y + 37);
+      continue;
+    }
+
+    const visibleHabits = completedHabits.slice(0, 3);
+    visibleHabits.forEach((habit, habitIndex) => {
+      const chipX = x + 6;
+      const chipY = y + 27 + habitIndex * 17;
+      const chipWidth = cellWidth - 12;
+      ctx.fillStyle = `${habit.color}24`;
+      drawRoundedRect(ctx, chipX, chipY, chipWidth, 14, 4);
+      ctx.fill();
+      ctx.fillStyle = "#40513f";
+      ctx.font = '8px "Microsoft YaHei UI", "PingFang SC", sans-serif';
+      const emoji = habit.emoji;
+      const maxTextWidth = chipWidth - 24;
+      const name = truncateCanvasText(ctx, habit.name, maxTextWidth);
+      ctx.fillText(emoji, chipX + 4, chipY + 10);
+      ctx.fillStyle = "#40513f";
+      ctx.fillText(name, chipX + 16, chipY + 10);
+    });
+
+    if (completedHabits.length > 3) {
+      ctx.fillStyle = "#6c7871";
+      ctx.font = '700 8px "Microsoft YaHei UI", "PingFang SC", sans-serif';
+      ctx.textAlign = "right";
+      ctx.fillText(`+${completedHabits.length - 3}`, x + cellWidth - 7, y + cellHeight - 7);
+      ctx.textAlign = "left";
+    }
+  }
+
+  return canvas;
+}
+
+async function createCalendarImageBlob() {
+  if (document.fonts && document.fonts.ready) await document.fonts.ready;
+  const canvas = createCalendarShareCanvas();
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error("Could not create calendar image"));
+    }, "image/png");
+  });
+}
+
+async function shareCurrentDay() {
+  const date = parseDate(selectedDateISO);
+  const fileName = `习惯打卡-${visibleMonth.getFullYear()}年${visibleMonth.getMonth() + 1}月.png`;
+  const title = `习惯打卡 · ${visibleMonth.getFullYear()}年${visibleMonth.getMonth() + 1}月`;
+
+  elements.shareButton.disabled = true;
+  try {
+    const blob = await createCalendarImageBlob();
+    const file = new File([blob], fileName, { type: "image/png" });
+
+    if (typeof navigator.share === "function" && typeof navigator.canShare === "function" && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title, text: "我的习惯打卡月历" });
+        showToast("月历图片已分享。");
+        return;
+      } catch (error) {
+        if (error && error.name === "AbortError") return;
+      }
+    }
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+    showToast("月历图片已生成，正在下载。");
+  } catch (error) {
+    showToast("图片生成失败，请稍后重试。");
+  } finally {
+    elements.shareButton.disabled = false;
+  }
+}
+function bindSortableList(container, onOrderChange) {
+  let draggedRow = null;
+
+  container.addEventListener("dragstart", (event) => {
+    const handle = event.target.closest("[data-drag-handle]");
+    if (!handle) {
+      event.preventDefault();
+      return;
+    }
+    const row = handle.closest("[data-habit-id]");
+    if (!row || row.parentElement !== container) {
+      event.preventDefault();
+      return;
+    }
+    draggedRow = row;
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", row.dataset.habitId);
+    window.requestAnimationFrame(() => row.classList.add("is-dragging"));
+  });
+
+  container.addEventListener("dragover", (event) => {
+    if (!draggedRow) return;
+    const target = event.target.closest("[data-habit-id]");
+    if (!target || target === draggedRow || target.parentElement !== container) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    const rect = target.getBoundingClientRect();
+    const insertAfter = event.clientY > rect.top + rect.height / 2;
+    container.insertBefore(draggedRow, insertAfter ? target.nextSibling : target);
+  });
+
+  function commitOrder() {
+    const ids = Array.from(container.querySelectorAll(":scope > [data-habit-id]")).map((row) => row.dataset.habitId);
+    onOrderChange(ids);
+  }
+
+  function finishDrag() {
+    if (!draggedRow) return;
+    const movedRow = draggedRow;
+    draggedRow = null;
+    movedRow.classList.remove("is-dragging");
+    commitOrder();
+  }
+
+  let touchDrag = null;
+
+  container.addEventListener("pointerdown", (event) => {
+    if (event.pointerType !== "touch") return;
+    const handle = event.target.closest("[data-drag-handle]");
+    if (!handle) return;
+    const row = handle.closest("[data-habit-id]");
+    if (!row || row.parentElement !== container) return;
+    touchDrag = { row, pointerId: event.pointerId };
+    try {
+      handle.setPointerCapture(event.pointerId);
+    } catch (error) {
+      // Some embedded browsers do not support pointer capture.
+    }
+    row.classList.add("is-dragging");
+    event.preventDefault();
+  });
+
+  container.addEventListener("pointermove", (event) => {
+    if (!touchDrag || touchDrag.pointerId !== event.pointerId) return;
+    const element = document.elementFromPoint(event.clientX, event.clientY);
+    const target = element?.closest("[data-habit-id]");
+    if (!target || target === touchDrag.row || target.parentElement !== container) return;
+    const rect = target.getBoundingClientRect();
+    const insertAfter = event.clientY > rect.top + rect.height / 2;
+    container.insertBefore(touchDrag.row, insertAfter ? target.nextSibling : target);
+    event.preventDefault();
+  });
+
+  function finishTouchDrag(event) {
+    if (!touchDrag || touchDrag.pointerId !== event.pointerId) return;
+    const movedRow = touchDrag.row;
+    touchDrag = null;
+    movedRow.classList.remove("is-dragging");
+    commitOrder();
+  }
+
+  container.addEventListener("pointerup", finishTouchDrag);
+  container.addEventListener("pointercancel", finishTouchDrag);
+  container.addEventListener("drop", (event) => {
+    if (!draggedRow) return;
+    event.preventDefault();
+    finishDrag();
+  });
+
+  container.addEventListener("dragend", finishDrag);
+
+  container.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
+    const handle = event.target.closest("[data-drag-handle]");
+    if (!handle) return;
+    const row = handle.closest("[data-habit-id]");
+    if (!row || row.parentElement !== container) return;
+    const sibling = event.key === "ArrowUp" ? row.previousElementSibling : row.nextElementSibling;
+    if (!sibling || !sibling.matches("[data-habit-id]")) return;
+    event.preventDefault();
+    if (event.key === "ArrowUp") container.insertBefore(row, sibling);
+    else container.insertBefore(sibling, row);
+    const ids = Array.from(container.querySelectorAll(":scope > [data-habit-id]")).map((item) => item.dataset.habitId);
+    onOrderChange(ids);
+  });
+}
+function setCloudMessage(element, message, isInfo = false) {
+  element.textContent = message || "";
+  element.classList.toggle("is-info", isInfo);
+}
+
+function formatCloudTime(value) {
+  if (!value) return "尚未同步";
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "尚未同步";
+  return `上次同步：${date.toLocaleString("zh-CN", { hour12: false })}`;
+}
+
+function setCloudStatus(status, message = "") {
+  cloudStatus = status;
+  const labels = {
+    local: "云同步",
+    configured: "登录同步",
+    syncing: "同步中",
+    synced: "已同步",
+    error: "同步异常"
+  };
+  const descriptions = {
+    local: "尚未连接云同步",
+    configured: "已配置，等待登录",
+    syncing: "正在与云端同步",
+    synced: "数据已同步",
+    error: "同步失败"
+  };
+
+  if (elements.cloudButton) {
+    elements.cloudButton.dataset.status = status;
+    elements.cloudButtonLabel.textContent = labels[status] || "云同步";
+    elements.cloudButton.title = message || descriptions[status] || "云同步";
+  }
+  if (elements.cloudStatusDotLarge) elements.cloudStatusDotLarge.dataset.status = status;
+  if (elements.cloudStatusText) elements.cloudStatusText.textContent = message || descriptions[status] || "等待同步";
+  if (elements.cloudLastSync) elements.cloudLastSync.textContent = formatCloudTime(cloudLastSyncAt);
+}
+
+function showCloudView(view) {
+  const views = {
+    setup: elements.cloudSetupView,
+    auth: elements.cloudAuthView,
+    account: elements.cloudAccountView
+  };
+  Object.entries(views).forEach(([name, element]) => {
+    element.hidden = name !== view;
+  });
+}
+
+function updateCloudDialogView() {
+  if (!cloudConfig) {
+    showCloudView("setup");
+    elements.cloudUrl.value = elements.cloudUrl.value || "";
+    elements.cloudAnonKey.value = elements.cloudAnonKey.value || "";
+    setCloudStatus("local");
+    return;
+  }
+
+  elements.cloudUrl.value = cloudConfig.supabaseUrl;
+  elements.cloudAnonKey.value = cloudConfig.supabaseAnonKey;
+
+  if (!cloudSession) {
+    showCloudView("auth");
+    setCloudStatus("configured");
+    return;
+  }
+
+  showCloudView("account");
+  elements.cloudUserEmail.textContent = cloudSession.user.email || cloudSession.user.id;
+  const currentStatus = cloudStatus === "error" ? "error" : (cloudStatus === "syncing" ? "syncing" : "synced");
+  setCloudStatus(currentStatus);
+}
+
+function openCloudDialog() {
+  updateCloudDialogView();
+  if (!elements.cloudDialog.open) elements.cloudDialog.showModal();
+}
+
+function closeCloudDialog() {
+  if (elements.cloudDialog.open) elements.cloudDialog.close();
+}
+
+function resetCloudSessionState(status = "configured") {
+  persistCloudSession(null);
+  cloudUpdatedAt = null;
+  cloudLastSyncAt = null;
+  cloudDirty = false;
+  window.clearTimeout(cloudSaveTimer);
+  setCloudStatus(status);
+}
+
+function ensureCloudConfigured() {
+  if (!cloudConfig || !cloudConfig.supabaseUrl || !cloudConfig.supabaseAnonKey) {
+    throw new Error("请先填写 Supabase 项目地址和公开密钥。");
+  }
+}
+
+async function cloudRequest(path, options = {}) {
+  ensureCloudConfigured();
+  const { method = "GET", body, useAuth = true, headers = {} } = options;
+  const token = useAuth ? cloudSession?.access_token : cloudConfig.supabaseAnonKey;
+  const requestHeaders = {
+    apikey: cloudConfig.supabaseAnonKey,
+    Authorization: `Bearer ${token || cloudConfig.supabaseAnonKey}`,
+    ...headers
+  };
+  if (body !== undefined) requestHeaders["Content-Type"] = "application/json";
+
+  let response;
+  try {
+    response = await fetch(`${cloudConfig.supabaseUrl}${path}`, {
+      method,
+      headers: requestHeaders,
+      body: body === undefined ? undefined : JSON.stringify(body)
+    });
+  } catch (error) {
+    throw new Error("无法连接云端，请检查网络或 Supabase 项目地址。");
+  }
+
+  const text = await response.text();
+  let payload = null;
+  if (text) {
+    try {
+      payload = JSON.parse(text);
+    } catch (error) {
+      payload = text;
+    }
+  }
+
+  if (!response.ok) {
+    const message = payload && typeof payload === "object"
+      ? payload.msg || payload.message || payload.error_description || payload.error || payload.hint
+      : payload;
+    throw new Error(message || `云端请求失败（${response.status}）`);
+  }
+  return payload;
+}
+
+function createCloudSession(payload, fallbackUser = null) {
+  const user = payload.user || fallbackUser;
+  if (!payload.access_token || !user || !user.id) throw new Error("登录响应缺少账户信息。");
+  return {
+    access_token: payload.access_token,
+    refresh_token: payload.refresh_token || "",
+    expires_at: Date.now() + Number(payload.expires_in || 3600) * 1000,
+    user: { id: user.id, email: user.email || fallbackUser?.email || "" }
+  };
+}
+
+async function ensureCloudSession() {
+  if (!cloudConfig || !cloudSession) return false;
+  if (cloudSession.expires_at > Date.now() + 60000) return true;
+  if (!cloudSession.refresh_token) {
+    resetCloudSessionState("configured");
+    return false;
+  }
+
+  const previousUser = cloudSession.user;
+  const payload = await cloudRequest("/auth/v1/token?grant_type=refresh_token", {
+    method: "POST",
+    body: { refresh_token: cloudSession.refresh_token },
+    useAuth: false
+  });
+  persistCloudSession(createCloudSession(payload, previousUser));
+  return true;
+}
+
+function applyCloudData(cloudData) {
+  if (!cloudData || !Array.isArray(cloudData.habits) || !cloudData.records || typeof cloudData.records !== "object") return false;
+  try {
+    localStorage.setItem(`${STORAGE_KEY}-before-cloud`, JSON.stringify(data));
+  } catch (error) {
+    // A local backup is helpful but not required for cloud loading.
+  }
+
+  data = {
+    version: 2,
+    habits: cloudData.habits.map(normalizeHabit).filter(Boolean),
+    dayHabits: normalizeDateHabitMap(cloudData.dayHabits),
+    hiddenHabits: normalizeHiddenMap(cloudData.hiddenHabits),
+    dayOrder: normalizeOrderMap(cloudData.dayOrder),
+    records: cloudData.records
+  };
+  saveData(false);
+  renderAll();
+  return true;
+}
+
+async function upsertCloudSnapshot() {
+  const userId = cloudSession.user.id;
+  const updatedAt = new Date().toISOString();
+  const rows = await cloudRequest("/rest/v1/habit_states?on_conflict=user_id", {
+    method: "POST",
+    headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+    body: [{ user_id: userId, data, updated_at: updatedAt }]
+  });
+  cloudUpdatedAt = Array.isArray(rows) && rows[0]?.updated_at ? rows[0].updated_at : updatedAt;
+  cloudLastSyncAt = new Date();
+  cloudDirty = false;
+}
+
+async function pushCloudSnapshot() {
+  if (!cloudConfig || !cloudSession || cloudSyncing) return false;
+  const versionAtStart = localChangeVersion;
+  cloudSyncing = true;
+  setCloudStatus("syncing", "正在上传本机数据…");
+  try {
+    if (!(await ensureCloudSession())) throw new Error("登录已失效，请重新登录。");
+    await upsertCloudSnapshot();
+    cloudDirty = localChangeVersion !== versionAtStart;
+    setCloudStatus(cloudDirty ? "syncing" : "synced", cloudDirty ? "同步期间有新更改，等待再次上传…" : "");
+    if (cloudDirty) scheduleCloudSave();
+    return true;
+  } catch (error) {
+    setCloudStatus("error", error.message);
+    return false;
+  } finally {
+    cloudSyncing = false;
+
+  }
+}
+
+async function pullCloudSnapshot(force = false) {
+  if (!cloudConfig || !cloudSession || cloudSyncing) return false;
+  const versionAtStart = localChangeVersion;
+  cloudSyncing = true;
+  setCloudStatus("syncing", "正在读取云端数据…");
+  try {
+    if (!(await ensureCloudSession())) throw new Error("登录已失效，请重新登录。");
+    const userId = encodeURIComponent(cloudSession.user.id);
+    const rows = await cloudRequest(`/rest/v1/habit_states?select=data,updated_at&user_id=eq.${userId}`);
+    const localChangedDuringPull = localChangeVersion !== versionAtStart;
+    if (Array.isArray(rows) && rows.length > 0) {
+      const row = rows[0];
+      const remoteTime = new Date(row.updated_at).getTime();
+      const knownTime = cloudUpdatedAt ? new Date(cloudUpdatedAt).getTime() : 0;
+      if (!localChangedDuringPull && (force || !cloudUpdatedAt || remoteTime > knownTime)) applyCloudData(row.data);
+      cloudUpdatedAt = row.updated_at;
+      cloudLastSyncAt = new Date();
+      cloudDirty = localChangedDuringPull;
+    } else {
+      await upsertCloudSnapshot();
+      cloudDirty = localChangeVersion !== versionAtStart;
+    }
+    setCloudStatus(cloudDirty ? "syncing" : "synced", cloudDirty ? "同步期间有新更改，等待再次上传…" : "");
+    if (cloudDirty) scheduleCloudSave();
+    return true;
+  } catch (error) {
+    setCloudStatus("error", error.message);
+    return false;
+  } finally {
+    cloudSyncing = false;
+
+  }
+}
+
+function scheduleCloudSave() {
+  if (!cloudConfig || !cloudSession) return;
+  cloudDirty = true;
+  window.clearTimeout(cloudSaveTimer);
+  setCloudStatus("syncing", "有更改等待上传…");
+  cloudSaveTimer = window.setTimeout(() => pushCloudSnapshot(), 700);
+}
+
+async function loginToCloud(email, password) {
+  const payload = await cloudRequest("/auth/v1/token?grant_type=password", {
+    method: "POST",
+    body: { email, password },
+    useAuth: false
+  });
+  persistCloudSession(createCloudSession(payload));
+  cloudUpdatedAt = null;
+  cloudLastSyncAt = null;
+  updateCloudDialogView();
+  await pullCloudSnapshot(true);
+}
+
+async function registerCloudAccount(email, password) {
+  const payload = await cloudRequest("/auth/v1/signup", {
+    method: "POST",
+    body: { email, password },
+    useAuth: false
+  });
+  if (payload && payload.access_token) {
+    persistCloudSession(createCloudSession(payload));
+    cloudUpdatedAt = null;
+    updateCloudDialogView();
+    await pullCloudSnapshot(true);
+    return "账户已创建并登录。";
+  }
+  return "注册成功，请先查收邮箱并完成验证，然后返回这里登录。";
+}
+
+function saveCloudConfigFromForm() {
+  try {
+    const url = elements.cloudUrl.value.trim().replace(/\/+$/, "");
+    const key = elements.cloudAnonKey.value.trim();
+    if (!/^https?:\/\//i.test(url)) throw new Error("请填写以 https:// 开头的 Supabase 项目地址。");
+    if (key.length < 20) throw new Error("请填写正确的 anon 或 publishable key。");
+    persistCloudConfig({ supabaseUrl: url, supabaseAnonKey: key });
+    resetCloudSessionState("configured");
+    setCloudMessage(elements.cloudSetupError, "");
+    updateCloudDialogView();
+    showToast("云同步连接设置已保存。");
+  } catch (error) {
+    setCloudMessage(elements.cloudSetupError, error.message);
+  }
+}
+
+function editCloudConfig() {
+  resetCloudSessionState("local");
+  cloudConfig = null;
+  try {
+    localStorage.removeItem(CLOUD_CONFIG_KEY);
+  } catch (error) {
+    // Ignore storage errors when resetting the connection.
+  }
+  updateCloudDialogView();
+}
+
+async function syncCloudNow() {
+  elements.cloudSyncNowButton.disabled = true;
+  try {
+    const success = cloudDirty ? await pushCloudSnapshot() : await pullCloudSnapshot(false);
+    showToast(success ? "云同步已完成。" : "同步失败，请检查网络设置。");
+  } finally {
+    elements.cloudSyncNowButton.disabled = false;
+  }
+}
+
+async function uploadLocalToCloud() {
+  if (!window.confirm("确定用当前设备的数据覆盖云端数据吗？其他设备下次同步时会读取这份数据。")) return;
+  elements.cloudUploadLocalButton.disabled = true;
+  try {
+    cloudDirty = true;
+    const success = await pushCloudSnapshot();
+    showToast(success ? "本机数据已上传到云端。" : "上传失败，请检查网络设置。");
+  } finally {
+    elements.cloudUploadLocalButton.disabled = false;
+  }
+}
+
+function signOutCloud() {
+  resetCloudSessionState("configured");
+  updateCloudDialogView();
+  showToast("已退出云同步账户，本机数据仍然保留。");
+}
+function bindEvents() {
+  bindSortableList(elements.selectedHabits, (ids) => {
+    data.dayOrder[selectedDateISO] = ids;
+    saveData();
+    renderAll();
+    showToast("当天习惯顺序已更新。");
+  });
+
+  bindSortableList(elements.managedHabits, (ids) => {
+    const byId = new Map(data.habits.map((habit) => [habit.id, habit]));
+    data.habits = ids.map((id) => byId.get(id)).filter(Boolean);
+    saveData();
+    renderAll();
+    renderManagedHabits();
+    showToast("全局习惯顺序已更新。");
+  });
+
+  elements.cloudButton.addEventListener("click", openCloudDialog);
+  elements.closeCloudButton.addEventListener("click", closeCloudDialog);
+  elements.cloudDialog.addEventListener("click", (event) => {
+    if (event.target === elements.cloudDialog) closeCloudDialog();
+  });
+  elements.saveCloudConfigButton.addEventListener("click", saveCloudConfigFromForm);
+  elements.editCloudConfigButton.addEventListener("click", editCloudConfig);
+  elements.changeCloudConfigButton.addEventListener("click", editCloudConfig);
+  elements.cloudSignOutButton.addEventListener("click", signOutCloud);
+  elements.cloudSyncNowButton.addEventListener("click", syncCloudNow);
+  elements.cloudUploadLocalButton.addEventListener("click", uploadLocalToCloud);
+  elements.cloudUrl.addEventListener("input", () => setCloudMessage(elements.cloudSetupError, ""));
+  elements.cloudAnonKey.addEventListener("input", () => setCloudMessage(elements.cloudSetupError, ""));
+  elements.cloudEmail.addEventListener("input", () => setCloudMessage(elements.cloudAuthError, ""));
+  elements.cloudPassword.addEventListener("input", () => setCloudMessage(elements.cloudAuthError, ""));
+
+  elements.cloudAuthForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const email = elements.cloudEmail.value.trim();
+    const password = elements.cloudPassword.value;
+    if (!email.includes("@") || password.length < 6) {
+      setCloudMessage(elements.cloudAuthError, "请填写有效邮箱和至少 6 位密码。");
+      return;
+    }
+    elements.cloudLoginButton.disabled = true;
+    elements.cloudRegisterButton.disabled = true;
+    setCloudMessage(elements.cloudAuthError, "正在登录…", true);
+    try {
+      await loginToCloud(email, password);
+      setCloudMessage(elements.cloudAuthError, "");
+      showToast("云同步登录成功。");
+    } catch (error) {
+      setCloudMessage(elements.cloudAuthError, error.message);
+    } finally {
+      elements.cloudLoginButton.disabled = false;
+      elements.cloudRegisterButton.disabled = false;
+    }
+  });
+
+  elements.cloudRegisterButton.addEventListener("click", async () => {
+    const email = elements.cloudEmail.value.trim();
+    const password = elements.cloudPassword.value;
+    if (!email.includes("@") || password.length < 6) {
+      setCloudMessage(elements.cloudAuthError, "请填写有效邮箱和至少 6 位密码。");
+      return;
+    }
+    elements.cloudLoginButton.disabled = true;
+    elements.cloudRegisterButton.disabled = true;
+    setCloudMessage(elements.cloudAuthError, "正在创建账户…", true);
+    try {
+      const message = await registerCloudAccount(email, password);
+      if (!cloudSession) {
+        setCloudMessage(elements.cloudAuthError, message, true);
+        showToast("请检查邮箱完成账户验证。");
+      } else {
+        setCloudMessage(elements.cloudAuthError, "");
+        showToast("云同步账户已创建。");
+      }
+    } catch (error) {
+      setCloudMessage(elements.cloudAuthError, error.message);
+    } finally {
+      elements.cloudLoginButton.disabled = false;
+      elements.cloudRegisterButton.disabled = false;
+    }
+  });
+
+  elements.shareButton.addEventListener("click", shareCurrentDay);
+  elements.manageHabitsButton.addEventListener("click", openManagerDialog);
+  elements.closeManagerButton.addEventListener("click", closeManagerDialog);
+  elements.addGlobalHabitButton.addEventListener("click", () => {
+    closeManagerDialog();
+    window.setTimeout(() => openHabitDialog("global", selectedDateISO, true), 0);
+  });
+
+  elements.managedHabits.addEventListener("click", (event) => {
+    const editButton = event.target.closest('[data-action="edit-global"]');
+    if (editButton) {
+      const habit = data.habits.find((item) => item.id === editButton.dataset.habitId);
+      if (habit) {
+        closeManagerDialog();
+        window.setTimeout(() => openHabitDialog("global", selectedDateISO, true, habit), 0);
+      }
+      return;
+    }
+
+    const button = event.target.closest('[data-action="delete-global"]');
+    if (!button) return;
+    const habitId = button.dataset.habitId;
+    if (managerDeleteArmId !== habitId) {
+      resetManagerDelete();
+      managerDeleteArmId = habitId;
+      renderManagedHabits();
+      managerDeleteTimer = window.setTimeout(() => {
+        resetManagerDelete();
+        renderManagedHabits();
+      }, 3200);
+      return;
+    }
+    deleteGlobalHabit(habitId);
+  });
+
+  elements.managerDialog.addEventListener("click", (event) => {
+    if (event.target === elements.managerDialog) closeManagerDialog();
+  });
+
+  elements.managerDialog.addEventListener("close", resetManagerDelete);
+
+  elements.inlineAddButton.addEventListener("click", () => openHabitDialog("day", selectedDateISO, false));
+  elements.closeDialogButton.addEventListener("click", () => closeHabitDialog());
+  elements.cancelDialogButton.addEventListener("click", () => closeHabitDialog());
+  elements.habitForm.addEventListener("submit", submitHabit);
+
+  elements.habitName.addEventListener("input", () => {
+    elements.habitName.classList.remove("is-invalid");
+    elements.nameError.textContent = "";
+  });
+
+  elements.calendarGrid.addEventListener("click", (event) => {
+    const cell = event.target.closest("[data-date]");
+    if (cell) selectDate(cell.dataset.date);
+  });
+
+  elements.selectedHabits.addEventListener("click", (event) => {
+    const actionButton = event.target.closest("[data-action]");
+    if (!actionButton) return;
+    const row = actionButton.closest("[data-habit-id]");
+    if (!row) return;
+    const habitId = row.dataset.habitId;
+    if (actionButton.dataset.action === "toggle") toggleHabit(habitId, actionButton);
+    if (actionButton.dataset.action === "remove-day") removeHabitFromDay(habitId);
+    if (actionButton.dataset.action === "edit-day") {
+      const habit = getActiveHabits(selectedDateISO).find((item) => item.id === habitId);
+      if (habit) openHabitDialog("day", selectedDateISO, false, habit);
+    }
+  });
+
+  elements.previousMonth.addEventListener("click", () => {
+    visibleMonth = addMonths(visibleMonth, -1);
+    selectedDateISO = sameMonth(visibleMonth, parseDate(todayISO())) ? todayISO() : toISO(visibleMonth);
+    renderAll();
+  });
+
+  elements.nextMonth.addEventListener("click", () => {
+    visibleMonth = addMonths(visibleMonth, 1);
+    selectedDateISO = sameMonth(visibleMonth, parseDate(todayISO())) ? todayISO() : toISO(visibleMonth);
+    renderAll();
+  });
+
+  elements.currentMonth.addEventListener("click", () => {
+    visibleMonth = monthStart(parseDate(todayISO()));
+    selectedDateISO = todayISO();
+    renderAll();
+  });
+
+  elements.goTodayButton.addEventListener("click", () => {
+    visibleMonth = monthStart(parseDate(todayISO()));
+    selectedDateISO = todayISO();
+    renderAll();
+  });
+
+  elements.habitDialog.addEventListener("click", (event) => {
+    if (event.target === elements.habitDialog) closeHabitDialog();
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) return;
+    if (cloudConfig && cloudSession) pullCloudSnapshot(false);
+    const currentDay = todayISO();
+    if (currentDay !== lastRenderedDay) {
+      lastRenderedDay = currentDay;
+      visibleMonth = monthStart(parseDate(currentDay));
+      selectedDateISO = currentDay;
+      renderAll();
+    }
+  });
+}
+
+buildChoiceOptions();
+setMotivation();
+bindEvents();
+renderAll();
+updateCloudDialogView();
+if (cloudConfig && cloudSession) pullCloudSnapshot(false);
+cloudPollTimer = window.setInterval(() => {
+  if (!document.hidden && cloudConfig && cloudSession && !cloudSyncing && !cloudDirty) pullCloudSnapshot(false);
+}, 20000);
+window.addEventListener("online", () => {
+  if (cloudConfig && cloudSession) {
+    if (cloudDirty) pushCloudSnapshot();
+    else pullCloudSnapshot(false);
+  }
+});
+  </script>
+</body>
+</html>
