@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#f7f7f7" />
-  <meta name="description" content="按天记录习惯、月历查看进度并跨设备同步的个人习惯打卡工具。" />
+  <meta name="theme-color" content="#f4f1e9" />
+  <meta name="description" content="习惯打卡、月历进度与训练计划合并的个人日常管理工具。" />
   <meta name="page-type" content="software" />
   <meta name="site-kind" content="software" />
-  <title>习惯打卡 · 月历</title>
+  <title>习惯打卡 · 日常</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='28' fill='%230d2a1c'/%3E%3Crect x='25' y='25' width='50' height='50' rx='12' fill='%23f6e016'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -2182,21 +2182,23 @@ svg {
     transform: translateX(-50%);
   }
 }</style>
+  <link rel="stylesheet" href="training-module.css" />
+  <link rel="stylesheet" href="capture-theme.css" />
 </head>
-<body>
+<body data-module="habits">
   <a class="skip-link" href="#calendarPanel">跳到月历</a>
   <div class="app-shell">
     <header class="app-header">
-      <a class="brand" href="#" aria-label="习惯打卡首页">
-        <span class="brand-name">习惯打卡</span>
-        <span class="brand-dot" aria-hidden="true"></span>
-      </a>
+<nav class="module-nav" aria-label="主要模块">
+        <button class="module-nav-button is-active" type="button" data-module-target="habits" aria-current="page"><span class="module-nav-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="4" width="14" height="16" rx="2.5" stroke="currentColor" stroke-width="1.7"/><path d="m8.8 12.1 2.1 2.1 4.6-4.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>习惯</span></button>
+        <button class="module-nav-button" type="button" data-module-target="training"><span class="module-nav-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 9v6M4.5 10v4M17 9v6M19.5 10v4M7 12h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><span>健身</span></button>
+      </nav>
       <div class="header-actions">
-        <button class="btn btn--secondary" id="shareButton" type="button">
+        <button class="btn btn--secondary habit-only" id="shareButton" type="button">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0 4 4m-4-4L8 7M5 12v7h14v-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           分享
         </button>
-        <button class="btn btn--primary" id="manageHabitsButton" type="button">
+        <button class="btn btn--primary habit-only" id="manageHabitsButton" type="button">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
           管理习惯
         </button>
@@ -2212,7 +2214,8 @@ svg {
       </div>
     </header>
 
-    <div class="motivation-bar" aria-label="今日激励语">
+    <div class="habit-module" id="habitModule">
+      <div class="motivation-bar" aria-label="今日激励语">
       <span class="quote-mark" aria-hidden="true">“</span>
       <p id="motivationText">把想做的事，变成每天都会做的小事。</p>
       <span class="quote-label">今日一句</span>
@@ -2287,8 +2290,52 @@ svg {
           </footer>
         </aside>
       </div>
+        </main>
+    </div>
+    <main class="training-module" id="trainingModule" hidden>
+      <section id="trainingLibraryView">
+        <header class="training-library-head">
+          <h1>健身计划</h1>
+        </header>
+        <section class="training-grid" id="trainingGrid" aria-label="训练计划列表"></section>
+      </section>
+      <section class="training-plan-view" id="trainingPlanView" hidden>
+        <button class="training-back-button" type="button" id="trainingBackButton">← 返回全部计划</button>
+        <header class="training-detail-head">
+          <div class="training-detail-title-row"><h1 id="trainingPlanTitle">居家四分化</h1></div>
+        </header>
+        <section class="training-day-panel">
+          <div class="training-day-list" id="trainingDayList"></div>
+        </section>
+        <div class="training-detail-layout">
+          <div class="training-detail-main">
+            <section class="training-panel training-warmup-panel">
+              <header class="training-panel-head">
+                <div class="training-panel-title">
+                  <span class="training-panel-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 14c2.2-4.2 5.2-6.3 8-6.3s5.8 2.1 8 6.3M7 17c1.4-2.5 3.1-3.8 5-3.8s3.6 1.3 5 3.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+                  <div><h2>热身激活</h2></div>
+                </div>
+              </header>
+              <div class="training-warmup-list" id="trainingWarmupList"></div>
+            </section>
+            <section class="training-panel training-exercise-panel">
+              <header class="training-panel-head">
+                <div class="training-panel-title">
+                  <span class="training-panel-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h16M6 8v8M18 8v8M9 10v4M15 10v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+                  <div><h2>动作清单</h2></div>
+                </div>
+              </header>
+              <div class="training-exercise-list" id="trainingExerciseList"></div>
+            </section>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
+  <nav class="module-bottom-nav" aria-label="主要模块">
+    <button class="module-bottom-button is-active" type="button" data-module-target="habits"><span class="module-nav-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="4" width="14" height="16" rx="2.5" stroke="currentColor" stroke-width="1.7"/><path d="m8.8 12.1 2.1 2.1 4.6-4.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>习惯</span></button>
+    <button class="module-bottom-button" type="button" data-module-target="training"><span class="module-nav-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 9v6M4.5 10v4M17 9v6M19.5 10v4M7 12h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><span>健身</span></button>
+  </nav>
 
   <dialog class="cloud-dialog modal" id="cloudDialog" aria-labelledby="cloudTitle">
     <div class="cloud-content modal-content">
@@ -2449,6 +2496,20 @@ svg {
     </form>
   </dialog>
 
+  <dialog class="modal training-detail-modal" id="trainingCueDialog" aria-labelledby="trainingCueTitle">
+    <div class="modal-content">
+      <header class="modal-header">
+        <div><p class="eyebrow" id="trainingCueTag">动作</p><h2 id="trainingCueTitle">动作名称</h2></div>
+        <button class="icon-button" type="button" id="trainingCueClose" aria-label="关闭动作要点">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </header>
+      <div class="training-detail-body">
+        <p id="trainingCueText">动作要点</p>
+        <div class="training-detail-grid"><div><span>组数</span><strong id="trainingCueSets">4 组</strong></div><div><span>次数</span><strong id="trainingCueReps">10–15 次</strong></div><div><span>休息</span><strong id="trainingCueRest">90 秒</strong></div></div>
+      </div>
+    </div>
+  </dialog>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -4464,5 +4525,19 @@ window.addEventListener("online", () => {
 });
   
   </script>
+  <script src="training-data.js"></script>
+  <script src="training-module.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
