@@ -2041,7 +2041,7 @@ body {
   }
 }
 .training-plan-card.is-available .training-plan-art.has-four-split-cover {
-  background-image: url('assets/four-split-training.jpg');
+  background-image: url('four-split-training.jpg');
   background-position: center 50%;
   background-size: cover;
 }
@@ -2226,3 +2226,4 @@ body[data-module="training"] .page-footer {
     padding-bottom: 0;
   }
 }
+

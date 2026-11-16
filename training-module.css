@@ -24,7 +24,7 @@ body[data-module="training"] .habit-only { display: none !important; }
 .training-plan-art { position: relative; height: 168px; overflow: hidden; background: linear-gradient(145deg, #193727, #0d2a1c); isolation: isolate; }
 .training-plan-art::before { content: ""; position: absolute; inset: 0; z-index: 1; background-image: linear-gradient(rgba(247,247,247,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(247,247,247,.08) 1px, transparent 1px); background-size: 30px 30px; }
 .training-plan-art::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(0deg, rgba(13,42,28,.86), transparent 64%); }
-.training-plan-card.is-available .training-plan-art { background-image: url('assets/training-hero.jpg'); background-position: center 47%; background-size: cover; }
+.training-plan-card.is-available .training-plan-art { background-image: url('training-hero.jpg'); background-position: center 47%; background-size: cover; }
 .training-plan-card.is-available .training-plan-art::before { opacity: .2; }
 .training-plan-tag, .training-plan-status { position: absolute; z-index: 2; top: 13px; padding: 5px 8px; border-radius: 7px; font-size: 10px; font-weight: 600; }
 .training-plan-tag { left: 13px; color: var(--ink); background: var(--accent); }
@@ -141,3 +141,4 @@ body[data-module="training"] .habit-only { display: none !important; }
   body { padding-bottom: 76px; }
   .training-detail-grid { grid-template-columns: 1fr; }
 }
+
